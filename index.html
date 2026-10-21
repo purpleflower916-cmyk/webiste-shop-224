@@ -1,0 +1,706 @@
+<title>Shop224</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=Pinyon+Script&display=swap">
+<style>
+/* Layout: fixed transparent nav over a split hero (copy left, black stage with a live pendant right),
+   a four-point "why personalise" strip, a four-card product grid with live engraving previews,
+   a slide-in bag, and a black footer. Palette follows the project design system: cream 60, black 30, black accent 10. */
+:root {
+  --cream: #fffdf5;
+  --ink: #000000;
+  --white: #ffffff;
+  --stone: #f3eedd;
+  --muted: #57544b;
+  --line: rgba(0, 0, 0, 0.14);
+  --field: rgba(0, 0, 0, 0.38);
+  --font-head: "Rasputin", "Cormorant Garamond", Georgia, serif;
+  --font-body: "TT Norms", "Figtree", "Helvetica Neue", Arial, sans-serif;
+  --font-script: "Pinyon Script", "Snell Roundhand", cursive;
+  --nav-h: 72px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 28px rgba(0, 0, 0, 0.07);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p { margin: 0; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.on-dark :focus-visible, .footer :focus-visible { outline-color: var(--cream); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wrap {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Metals */
+.f-head { font-family: var(--font-head); font-weight: 600; }
+.f-script { font-family: var(--font-script); }
+.f-body { font-family: var(--font-body); font-weight: 600; }
+[data-metal="gold"]   { --engrave: #2a2113; }
+[data-metal="silver"] { --engrave: #23262c; }
+[data-metal="rose"]   { --engrave: #3a1e19; }
+[data-metal="gold"] .metal   { fill: url(#g-gold); }
+[data-metal="silver"] .metal { fill: url(#g-silver); }
+[data-metal="rose"] .metal   { fill: url(#g-rose); }
+[data-metal="gold"] .stroke-metal   { stroke: url(#g-gold); }
+[data-metal="silver"] .stroke-metal { stroke: url(#g-silver); }
+[data-metal="rose"] .stroke-metal   { stroke: url(#g-rose); }
+.engrave { fill: var(--engrave); opacity: 0.86; transition: opacity 0.2s ease; }
+.is-empty .engrave, .is-empty .name-text { opacity: 0.3; }
+.name-text { transition: opacity 0.2s ease; stroke: rgba(0, 0, 0, 0.18); stroke-width: 0.6; }
+.sw-gold   { background: linear-gradient(135deg, #8a6a2b, #f3dc9a 40%, #b88a3a 65%, #f7e6b0); }
+.sw-silver { background: linear-gradient(135deg, #8d9096, #f4f5f7 40%, #a5a8ae 65%, #ffffff); }
+.sw-rose   { background: linear-gradient(135deg, #a9645a, #f2c4b5 40%, #c27d6e 65%, #f7d9cd); }
+
+/* Buttons */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px;
+  border: 1px solid var(--ink); border-radius: 4px;
+  background: var(--ink); color: var(--white);
+  font-weight: 600; font-size: 0.95rem; line-height: 1; letter-spacing: 0.02em;
+  text-decoration: none; cursor: pointer;
+  transition: background-color 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+.btn:hover { background: var(--white); color: var(--ink); }
+.btn:active { transform: translateY(1px); }
+.btn-block { width: 100%; }
+.textlink {
+  font-weight: 600; font-size: 0.95rem; text-decoration: none;
+  border-bottom: 1px solid var(--ink); padding-bottom: 2px;
+  transition: opacity 0.2s ease;
+}
+.textlink:hover { opacity: 0.6; }
+
+/* Navigation */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: transparent;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.nav.scrolled { background: var(--white); box-shadow: 0 1px 0 var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.logo { font-family: var(--font-head); font-weight: 600; font-size: 1.7rem; letter-spacing: 0.01em; text-decoration: none; line-height: 1; }
+.links { display: flex; align-items: center; gap: 32px; }
+.links a, .bag-btn {
+  font-size: 0.95rem; text-decoration: none; background: none; border: 0; padding: 6px 0; cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.links a:hover, .bag-btn:hover { opacity: 0.6; }
+.bag-btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.badge {
+  min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px;
+  background: var(--ink); color: var(--white);
+  font-size: 0.75rem; font-weight: 600; line-height: 22px; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Hero */
+.hero { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 88px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.eyebrow { font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.hero h1 {
+  margin-top: 20px;
+  font-family: var(--font-head); font-weight: 500;
+  font-size: clamp(2.9rem, 6.6vw, 5.8rem); line-height: 0.98; letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.lede { margin-top: 24px; max-width: 46ch; font-size: 1.08rem; color: var(--muted); }
+.hero-actions { margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+
+.stage {
+  border-radius: 4px; color: var(--cream);
+  padding: clamp(20px, 3vw, 32px);
+  background: radial-gradient(circle at 50% 36%, #2b2a27 0%, #0b0b0a 58%, #000 100%);
+  display: grid; gap: 16px; min-width: 0;
+}
+.stage-top { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 253, 245, 0.7); }
+.stage svg { display: block; width: 100%; max-width: 400px; height: auto; margin-inline: auto; }
+.stage-field { display: grid; gap: 8px; max-width: 400px; width: 100%; margin-inline: auto; }
+.stage-field label { font-size: 0.85rem; color: rgba(255, 253, 245, 0.8); }
+.stage-field input {
+  width: 100%; padding: 12px 14px; border-radius: 4px;
+  background: transparent; border: 1px solid rgba(255, 253, 245, 0.45); color: var(--cream);
+  transition: border-color 0.2s ease;
+}
+.stage-field input::placeholder { color: rgba(255, 253, 245, 0.45); }
+.stage-field input:focus { border-color: var(--cream); }
+
+/* Sections */
+.section { padding-block: 88px; }
+.section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: 48px; }
+.section h2 {
+  font-family: var(--font-head); font-weight: 500;
+  font-size: clamp(2.1rem, 4.4vw, 3.3rem); line-height: 1.05; letter-spacing: -0.005em;
+  text-wrap: balance; max-width: 18ch;
+}
+.section-head p { max-width: 40ch; color: var(--muted); }
+#why, #collection { scroll-margin-top: calc(var(--nav-h) - 8px); }
+
+.why { border-top: 1px solid var(--line); }
+.why-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px 32px; }
+.why-item { border-top: 1px solid var(--ink); padding-top: 20px; }
+.why-item h3 { font-family: var(--font-head); font-weight: 600; font-size: 1.5rem; line-height: 1.15; }
+.why-item p { margin-top: 10px; color: var(--muted); font-size: 0.98rem; }
+
+/* Product grid */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
+.card { background: var(--white); border-radius: 4px; box-shadow: var(--shadow); display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
+.art { background: radial-gradient(circle at 50% 40%, #fbf8ec, #eee8d4); aspect-ratio: 1 / 1; max-width: 100%; }
+.art svg { display: block; width: 100%; height: 100%; }
+.card-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
+.title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.card h3 { font-family: var(--font-head); font-weight: 700; font-size: 1.4rem; line-height: 1.15; }
+.price { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.desc { color: var(--muted); font-size: 0.94rem; margin-top: -6px; }
+.metals { display: flex; align-items: center; gap: 10px; border: 0; padding: 0; margin: 0; min-width: 0; }
+.metals legend { padding: 0; }
+.swatch { position: relative; display: inline-flex; }
+.swatch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.swatch span { width: 26px; height: 26px; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2); transition: box-shadow 0.2s ease; }
+.swatch input:checked + span { box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.2), 0 0 0 2px var(--white), 0 0 0 3.5px var(--ink); }
+.swatch input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 5px; }
+.metal-name { font-size: 0.86rem; color: var(--muted); margin-left: 4px; }
+.field { display: grid; gap: 8px; margin-top: auto; }
+.field label { font-size: 0.86rem; font-weight: 600; }
+.field input {
+  width: 100%; padding: 12px 14px; border: 1px solid var(--field); border-radius: 4px; background: var(--white);
+  transition: border-color 0.2s ease;
+}
+.field input::placeholder { color: rgba(0, 0, 0, 0.42); }
+.field input:focus { border-color: var(--ink); }
+.field-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 0.8rem; color: var(--muted); }
+.field-meta .count { font-variant-numeric: tabular-nums; }
+.field-meta.warn .hint { color: var(--ink); font-weight: 600; }
+
+/* Footer */
+.footer { background: var(--ink); color: var(--cream); padding-block: 72px 40px; }
+.footer-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr)); gap: 40px; }
+.footer .logo { font-size: 2rem; display: inline-block; }
+.footer-blurb { margin-top: 14px; max-width: 34ch; color: rgba(255, 253, 245, 0.7); }
+.footer h3 { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 253, 245, 0.6); }
+.footer ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+.footer li a, .footer li button { background: none; border: 0; padding: 0; text-decoration: none; cursor: pointer; transition: opacity 0.2s ease; }
+.footer li a:hover, .footer li button:hover { opacity: 0.6; }
+.footer-base { margin-top: 56px; padding-top: 24px; border-top: 1px solid rgba(255, 253, 245, 0.2); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: 0.84rem; color: rgba(255, 253, 245, 0.6); }
+
+/* Bag drawer */
+.scrim { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.42); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+.scrim.open { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
+.drawer {
+  position: fixed; top: 0; right: 0; bottom: 0; z-index: 50;
+  width: min(430px, 100%); background: var(--white);
+  display: flex; flex-direction: column;
+  padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); padding-right: env(safe-area-inset-right, 0px);
+  transform: translateX(100%); visibility: hidden;
+  transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1), visibility 0s linear 0.35s;
+  box-shadow: -12px 0 40px rgba(0, 0, 0, 0.12);
+}
+.drawer.open { transform: none; visibility: visible; transition: transform 0.35s cubic-bezier(0.2, 0.7, 0.2, 1); }
+.drawer-head { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--line); }
+.drawer-head h2 { font-family: var(--font-head); font-weight: 600; font-size: 1.6rem; line-height: 1; }
+.icon-btn { width: 40px; height: 40px; border: 1px solid var(--line); border-radius: 4px; background: var(--white); cursor: pointer; display: grid; place-items: center; transition: background-color 0.2s ease; }
+.icon-btn:hover { background: var(--stone); }
+.bag-list { list-style: none; margin: 0; padding: 0 20px; flex: 1; overflow-y: auto; }
+.bag-item { display: grid; grid-template-columns: 56px minmax(0, 1fr) auto; gap: 14px; padding: 18px 0; border-bottom: 1px solid var(--line); }
+.thumb { width: 56px; height: 56px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18); }
+.bag-name { font-weight: 700; line-height: 1.25; }
+.bag-meta { font-size: 0.86rem; color: var(--muted); overflow-wrap: anywhere; }
+.bag-controls { margin-top: 10px; display: flex; align-items: center; gap: 14px; }
+.qty { display: inline-flex; align-items: center; border: 1px solid var(--line); border-radius: 4px; }
+.qty button { width: 32px; height: 32px; border: 0; background: none; cursor: pointer; font-size: 1.05rem; transition: background-color 0.2s ease; }
+.qty button:hover { background: var(--stone); }
+.qty span { min-width: 26px; text-align: center; font-variant-numeric: tabular-nums; font-size: 0.92rem; }
+.link-btn { background: none; border: 0; padding: 0; cursor: pointer; font-size: 0.86rem; color: var(--muted); text-decoration: underline; }
+.link-btn:hover { color: var(--ink); }
+.bag-line { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.bag-empty { padding: 40px 20px; text-align: center; display: grid; gap: 20px; justify-items: center; color: var(--muted); flex: 1; align-content: center; }
+.bag-empty p { max-width: 30ch; }
+.drawer-foot { padding: 20px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
+.subtotal { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
+.foot-note { font-size: 0.84rem; color: var(--muted); }
+
+@media (max-width: 900px) {
+  .hero-grid { grid-template-columns: minmax(0, 1fr); }
+  .why-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-grid > :first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 560px) {
+  .links { gap: 20px; }
+  .links .hide-sm { display: none; }
+  .hero { padding-bottom: 64px; }
+  .section { padding-block: 64px; }
+  .why-grid { grid-template-columns: minmax(0, 1fr); }
+  .grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <linearGradient id="g-gold" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
+      <stop offset="0" stop-color="#8a6a2b"/><stop offset="0.3" stop-color="#f3dc9a"/><stop offset="0.55" stop-color="#b88a3a"/><stop offset="0.8" stop-color="#f7e6b0"/><stop offset="1" stop-color="#9a7430"/>
+    </linearGradient>
+    <linearGradient id="g-silver" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
+      <stop offset="0" stop-color="#8d9096"/><stop offset="0.3" stop-color="#f4f5f7"/><stop offset="0.55" stop-color="#a5a8ae"/><stop offset="0.8" stop-color="#ffffff"/><stop offset="1" stop-color="#8d9096"/>
+    </linearGradient>
+    <linearGradient id="g-rose" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
+      <stop offset="0" stop-color="#a9645a"/><stop offset="0.3" stop-color="#f2c4b5"/><stop offset="0.55" stop-color="#c27d6e"/><stop offset="0.8" stop-color="#f7d9cd"/><stop offset="1" stop-color="#a9645a"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Shop224, back to top">Shop224</a>
+    <nav class="links" aria-label="Main">
+      <a class="hide-sm" href="#why">Why personalise</a>
+      <a href="#collection">Collection</a>
+      <button class="bag-btn" id="bagToggle" type="button" aria-controls="bag" aria-expanded="false">
+        Bag <span class="badge" id="bagCount" aria-live="polite" hidden>0</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<main id="main">
+  <section class="hero" id="top">
+    <div class="wrap hero-grid">
+      <div class="hero-copy">
+        <p class="eyebrow">Personalised jewellery</p>
+        <h1>Made with your name on&nbsp;it.</h1>
+        <p class="lede">Type an initial, a name or a short message and see it engraved on the piece before you order. Every piece is made for one person.</p>
+        <div class="hero-actions">
+          <a class="btn" href="#collection">Shop the collection</a>
+          <a class="textlink" href="#why">Why personalise</a>
+        </div>
+      </div>
+      <div class="stage on-dark" id="stage" data-metal="gold">
+        <div class="stage-top"><span>Live preview</span><span>Gold</span></div>
+        <div id="stageArt"></div>
+        <div class="stage-field">
+          <label for="heroInput">Try your initial</label>
+          <input id="heroInput" type="text" maxlength="2" value="M" placeholder="Type one or two letters" autocomplete="off" spellcheck="false">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section why" id="why">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>A piece that can only be theirs</h2>
+        <p>Personalising turns a nice gift into the one they keep.</p>
+      </div>
+      <div class="why-grid">
+        <div class="why-item">
+          <h3>Gift with confidence</h3>
+          <p>No guessing at style. A piece with their name on it cannot be duplicated or passed along.</p>
+        </div>
+        <div class="why-item">
+          <h3>Keep someone close</h3>
+          <p>Initials, birthstones and short messages turn love, friendship or remembrance into something worn every day.</p>
+        </div>
+        <div class="why-item">
+          <h3>Wear your own story</h3>
+          <p>Stand out from mass-produced jewellery with details that belong to you and nobody else.</p>
+        </div>
+        <div class="why-item">
+          <h3>Mark the moment</h3>
+          <p>Weddings, graduations, a new baby. An engraved piece becomes an heirloom for the next generation.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="collection" style="padding-top:0">
+    <div class="wrap">
+      <div class="section-head">
+        <h2>The collection</h2>
+        <p>Choose a metal, type your engraving and watch the preview change as you type. Each piece below shows an example you can replace.</p>
+      </div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="logo" href="#top">Shop224</a>
+        <p class="footer-blurb">Jewellery engraved to order with the words that matter to you.</p>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="#collection">The collection</a></li>
+          <li><a href="#why">Why personalise</a></li>
+          <li><a href="#top">Back to top</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Your order</h3>
+        <ul>
+          <li><button type="button" id="footerBag">View your bag</button></li>
+          <li>Free engraving on every piece</li>
+          <li>Prices in South African rand</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>&copy; 2026 Shop224. All rights reserved.</span>
+      <span>Made for one person at a time.</span>
+    </div>
+  </div>
+</footer>
+
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" id="bag" aria-label="Shopping bag" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Your bag</h2>
+    <button class="icon-btn" id="bagClose" type="button" aria-label="Close bag">
+      <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2 14 14M14 2 2 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
+    </button>
+  </div>
+  <ul class="bag-list" id="bagList"></ul>
+  <div class="bag-empty" id="bagEmpty">
+    <p>Your bag is empty. Choose a piece, type your engraving and tap Personalise Now.</p>
+    <a class="btn" href="#collection" id="bagBrowse">Browse the collection</a>
+  </div>
+  <div class="drawer-foot" id="bagFoot">
+    <div class="subtotal"><span>Subtotal</span><span id="bagSubtotal">R 0</span></div>
+    <p class="foot-note" id="bagNote">Engraving is free. Shipping is calculated at checkout.</p>
+    <button class="btn btn-block" id="checkout" type="button">Checkout</button>
+  </div>
+</aside>
+
+<script>
+(function () {
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  var METALS = { gold: 'Gold', silver: 'Silver', rose: 'Rose gold' };
+  var STORE_KEY = 'shop224-bag';
+
+  function fmt(n) { return 'R ' + n.toLocaleString('en-ZA'); }
+  function chars(s) { return Array.from(s); }
+
+  /* ---------- Illustrations (all drawn in a 400 x 400 box so the metal gradients line up) ---------- */
+  function pendantSVG(label) {
+    return '<svg viewBox="0 0 400 400" role="img" aria-label="' + label + '">' +
+      '<path class="stroke-metal" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2" d="M64 -10 C 92 170 150 200 200 200 C 250 200 308 170 336 -10"/>' +
+      '<circle class="stroke-metal" cx="200" cy="214" r="9" fill="none" stroke-width="4"/>' +
+      '<ellipse cx="200" cy="372" rx="62" ry="7" fill="rgba(0,0,0,0.12)"/>' +
+      '<circle class="metal" cx="200" cy="292" r="68"/>' +
+      '<circle cx="200" cy="292" r="58" fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="1"/>' +
+      '<path d="M150 262 A58 58 0 0 1 222 238" fill="none" stroke="#fff" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>' +
+      '<text class="engrave f-head pt-text" x="200" y="292" dy="0.33em" text-anchor="middle" font-size="68">M</text>' +
+      '</svg>';
+  }
+  function nameSVG() {
+    return '<svg viewBox="0 0 400 400" role="img" aria-label="Name necklace preview">' +
+      '<path class="stroke-metal nm-l" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2" d="M64 -10 Q 90 150 140 240"/>' +
+      '<path class="stroke-metal nm-r" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2" d="M336 -10 Q 310 150 260 240"/>' +
+      '<circle class="stroke-metal nm-lr" cx="140" cy="240" r="5" fill="none" stroke-width="3"/>' +
+      '<circle class="stroke-metal nm-rr" cx="260" cy="240" r="5" fill="none" stroke-width="3"/>' +
+      '<text class="metal name-text f-script nm-text" x="200" y="275" text-anchor="middle" font-size="84">Amara</text>' +
+      '</svg>';
+  }
+  function studSVG() {
+    function stud(cx) {
+      return '<ellipse cx="' + cx + '" cy="300" rx="50" ry="7" fill="rgba(0,0,0,0.12)"/>' +
+        '<circle class="metal" cx="' + cx + '" cy="200" r="66"/>' +
+        '<circle cx="' + cx + '" cy="200" r="56" fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="1"/>' +
+        '<path d="M' + (cx - 46) + ' 176 A56 56 0 0 1 ' + (cx + 14) + ' 146" fill="none" stroke="#fff" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>';
+    }
+    return '<svg viewBox="0 0 400 400" role="img" aria-label="Stud earrings preview">' +
+      stud(114) + stud(286) +
+      '<text class="engrave f-head st-l" x="114" y="200" dy="0.33em" text-anchor="middle" font-size="58">S</text>' +
+      '<text class="engrave f-head st-r" x="286" y="200" dy="0.33em" text-anchor="middle" font-size="58">K</text>' +
+      '</svg>';
+  }
+  function barSVG() {
+    return '<svg viewBox="0 0 400 400" role="img" aria-label="Bar bracelet preview">' +
+      '<ellipse class="stroke-metal" cx="200" cy="186" rx="152" ry="112" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2"/>' +
+      '<circle class="stroke-metal" cx="200" cy="74" r="8" fill="none" stroke-width="3.4"/>' +
+      '<ellipse cx="200" cy="344" rx="110" ry="8" fill="rgba(0,0,0,0.12)"/>' +
+      '<rect class="metal" x="96" y="276" width="208" height="46" rx="8"/>' +
+      '<rect x="102" y="282" width="196" height="34" rx="5" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>' +
+      '<text class="engrave f-body bar-text" x="200" y="299" dy="0.35em" text-anchor="middle" font-size="17" letter-spacing="2">FOREVER YOURS</text>' +
+      '</svg>';
+  }
+
+  /* ---------- Products ---------- */
+  function setEmpty(card, empty) { card.classList.toggle('is-empty', empty); }
+
+  var PRODUCTS = [
+    {
+      id: 'initial', name: 'Initial Disc Necklace', price: 749, max: 3, sample: 'M',
+      placeholder: 'e.g. M or MJK', hint: 'Up to 3 letters',
+      desc: 'A polished disc pendant on a fine chain, engraved with up to three initials.',
+      art: function () { return pendantSVG('Initial disc necklace preview'); },
+      update: function (card, t) {
+        var c = chars(t.toUpperCase());
+        var el = $('.pt-text', card);
+        el.textContent = c.join('');
+        el.setAttribute('font-size', c.length <= 1 ? 68 : c.length === 2 ? 50 : 38);
+      }
+    },
+    {
+      id: 'name', name: 'Script Name Necklace', price: 1099, max: 12, sample: 'Amara',
+      placeholder: 'e.g. Amara', hint: 'Up to 12 characters',
+      desc: 'Your name in flowing script, hung from a fine chain.',
+      art: nameSVG,
+      update: function (card, t) {
+        var n = chars(t).length;
+        var size = n <= 4 ? 92 : n <= 6 ? 78 : n <= 8 ? 64 : n <= 10 ? 54 : 46;
+        var el = $('.nm-text', card);
+        el.textContent = t;
+        el.setAttribute('font-size', size);
+        var bb;
+        try { bb = el.getBBox(); } catch (e) { return; }
+        if (!bb || !bb.width) return;
+        var y = 275 - size * 0.3, lx = bb.x - 3, rx = bb.x + bb.width + 3;
+        $('.nm-l', card).setAttribute('d', 'M64 -10 Q ' + (lx - 14) + ' ' + (y - 100) + ' ' + lx + ' ' + y);
+        $('.nm-r', card).setAttribute('d', 'M336 -10 Q ' + (rx + 14) + ' ' + (y - 100) + ' ' + rx + ' ' + y);
+        var a = $('.nm-lr', card), b = $('.nm-rr', card);
+        a.setAttribute('cx', lx); a.setAttribute('cy', y);
+        b.setAttribute('cx', rx); b.setAttribute('cy', y);
+      }
+    },
+    {
+      id: 'studs', name: 'Engraved Stud Earrings', price: 599, max: 2, sample: 'SK',
+      placeholder: 'e.g. SK', hint: 'One letter each. Type one to match.',
+      desc: 'Round studs with a letter on each. Type two for a pair, or one for a match.',
+      art: studSVG,
+      update: function (card, t) {
+        var c = chars(t.toUpperCase());
+        $('.st-l', card).textContent = c[0];
+        $('.st-r', card).textContent = c[1] || c[0];
+      }
+    },
+    {
+      id: 'bar', name: 'Engraved Bar Bracelet', price: 849, max: 18, sample: 'Forever yours',
+      placeholder: 'e.g. a date or a word', hint: 'Up to 18 characters',
+      desc: 'A slim chain bracelet with a bar for a date, a word or a short message.',
+      art: barSVG,
+      update: function (card, t) {
+        var c = chars(t.toUpperCase());
+        var el = $('.bar-text', card);
+        el.textContent = c.join('');
+        var size = Math.max(10, Math.min(20, 178 / (c.length * 0.8)));
+        el.setAttribute('font-size', size.toFixed(1));
+        el.setAttribute('letter-spacing', (size * 0.12).toFixed(1));
+      }
+    }
+  ];
+  var BY_ID = {};
+  PRODUCTS.forEach(function (p) { BY_ID[p.id] = p; });
+
+  function metalRadios(p) {
+    return Object.keys(METALS).map(function (k, i) {
+      return '<label class="swatch"><input type="radio" name="metal-' + p.id + '" value="' + k + '"' + (i === 0 ? ' checked' : '') + '>' +
+        '<span class="sw-' + k + '"></span><span class="sr">' + METALS[k] + '</span></label>';
+    }).join('');
+  }
+
+  function buildCard(p) {
+    var card = document.createElement('article');
+    card.className = 'card';
+    card.setAttribute('data-metal', 'gold');
+    card.innerHTML =
+      '<div class="art">' + p.art() + '</div>' +
+      '<div class="card-body">' +
+        '<div class="title-row"><h3>' + p.name + '</h3><span class="price">' + fmt(p.price) + '</span></div>' +
+        '<p class="desc">' + p.desc + '</p>' +
+        '<fieldset class="metals"><legend class="sr">Metal</legend>' + metalRadios(p) + '<span class="metal-name">Gold</span></fieldset>' +
+        '<div class="field">' +
+          '<label for="in-' + p.id + '">Enter Engraving Text</label>' +
+          '<input id="in-' + p.id + '" type="text" maxlength="' + p.max + '" value="' + p.sample + '" placeholder="' + p.placeholder + '" autocomplete="off" spellcheck="false" aria-describedby="hint-' + p.id + '">' +
+          '<div class="field-meta"><span class="hint" id="hint-' + p.id + '">' + p.hint + '</span><span class="count" aria-hidden="true"></span></div>' +
+        '</div>' +
+        '<button class="btn btn-block" type="button">Personalise Now</button>' +
+      '</div>';
+
+    var input = $('input[type="text"]', card);
+    var meta = $('.field-meta', card);
+    var hint = $('.hint', card);
+    var count = $('.count', card);
+
+    function refresh() {
+      var raw = input.value.trim();
+      setEmpty(card, !raw);
+      p.update(card, raw || p.sample);
+      count.textContent = chars(input.value).length + '/' + p.max;
+    }
+    input.addEventListener('input', function () {
+      meta.classList.remove('warn');
+      hint.textContent = p.hint;
+      refresh();
+    });
+    card.addEventListener('change', function (e) {
+      if (e.target.name === 'metal-' + p.id) {
+        card.setAttribute('data-metal', e.target.value);
+        $('.metal-name', card).textContent = METALS[e.target.value];
+        refresh();
+      }
+    });
+    $('.btn', card).addEventListener('click', function () {
+      var text = input.value.trim();
+      if (!text) {
+        meta.classList.add('warn');
+        hint.textContent = 'Type your engraving first.';
+        input.focus();
+        return;
+      }
+      addToBag(p, card.getAttribute('data-metal'), text);
+    });
+    card._refresh = refresh;
+    refresh();
+    return card;
+  }
+
+  var grid = $('#grid');
+  var cards = PRODUCTS.map(function (p) { var c = buildCard(p); grid.appendChild(c); return c; });
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(function () { cards.forEach(function (c) { c._refresh(); }); });
+  }
+
+  /* ---------- Hero ---------- */
+  var stage = $('#stage');
+  $('#stageArt').innerHTML = pendantSVG('Live pendant preview');
+  var heroInput = $('#heroInput');
+  function heroRefresh() {
+    var raw = heroInput.value.trim();
+    setEmpty(stage, !raw);
+    var c = chars((raw || 'M').toUpperCase());
+    var el = $('.pt-text', stage);
+    el.textContent = c.join('');
+    el.setAttribute('font-size', c.length <= 1 ? 68 : 50);
+  }
+  heroInput.addEventListener('input', heroRefresh);
+  heroRefresh();
+
+  /* ---------- Nav ---------- */
+  var nav = $('#nav');
+  function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 8); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- Bag ---------- */
+  var bag = loadBag();
+  var drawer = $('#bag'), scrim = $('#scrim'), toggle = $('#bagToggle');
+  var lastFocus = null;
+
+  function loadBag() {
+    try {
+      var v = JSON.parse(localStorage.getItem(STORE_KEY) || '[]');
+      if (!Array.isArray(v)) return [];
+      return v.filter(function (i) {
+        return i && BY_ID[i.id] && METALS[i.metal] && typeof i.text === 'string' && i.text &&
+          typeof i.qty === 'number' && i.qty >= 1 && i.qty <= 9;
+      });
+    } catch (e) { return []; }
+  }
+  function saveBag() { try { localStorage.setItem(STORE_KEY, JSON.stringify(bag)); } catch (e) {} }
+
+  function addToBag(p, metal, text) {
+    var found = bag.filter(function (i) { return i.id === p.id && i.metal === metal && i.text === text; })[0];
+    if (found) { found.qty = Math.min(9, found.qty + 1); }
+    else { bag.push({ id: p.id, metal: metal, text: text, qty: 1 }); }
+    saveBag(); renderBag(); openBag();
+  }
+
+  function el(tag, cls, txt) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (txt != null) n.textContent = txt;
+    return n;
+  }
+
+  function renderBag() {
+    var list = $('#bagList');
+    list.innerHTML = '';
+    var total = 0, units = 0;
+    bag.forEach(function (item, idx) {
+      var p = BY_ID[item.id];
+      total += p.price * item.qty; units += item.qty;
+      var li = el('li', 'bag-item');
+      li.appendChild(el('div', 'thumb sw-' + item.metal));
+      var mid = el('div');
+      mid.appendChild(el('div', 'bag-name', p.name));
+      mid.appendChild(el('div', 'bag-meta', METALS[item.metal] + ' · “' + item.text + '”'));
+      var ctl = el('div', 'bag-controls');
+      var q = el('div', 'qty');
+      var minus = el('button', null, '−'); minus.type = 'button'; minus.setAttribute('aria-label', 'Decrease quantity of ' + p.name);
+      var num = el('span', null, String(item.qty));
+      var plus = el('button', null, '+'); plus.type = 'button'; plus.setAttribute('aria-label', 'Increase quantity of ' + p.name);
+      minus.addEventListener('click', function () { item.qty = Math.max(1, item.qty - 1); saveBag(); renderBag(); });
+      plus.addEventListener('click', function () { item.qty = Math.min(9, item.qty + 1); saveBag(); renderBag(); });
+      q.appendChild(minus); q.appendChild(num); q.appendChild(plus);
+      var rm = el('button', 'link-btn', 'Remove'); rm.type = 'button'; rm.setAttribute('aria-label', 'Remove ' + p.name + ' from bag');
+      rm.addEventListener('click', function () { bag.splice(idx, 1); saveBag(); renderBag(); });
+      ctl.appendChild(q); ctl.appendChild(rm);
+      mid.appendChild(ctl);
+      li.appendChild(mid);
+      li.appendChild(el('div', 'bag-line', fmt(p.price * item.qty)));
+      list.appendChild(li);
+    });
+    var has = bag.length > 0;
+    list.hidden = !has;
+    $('#bagFoot').hidden = !has;
+    $('#bagEmpty').hidden = has;
+    $('#bagSubtotal').textContent = fmt(total);
+    $('#bagNote').textContent = 'Engraving is free. Shipping is calculated at checkout.';
+    var badge = $('#bagCount');
+    badge.hidden = !has;
+    badge.textContent = String(units);
+  }
+
+  var pageParts = [$('#nav'), $('#main'), $('#footer')];
+  function openBag() {
+    lastFocus = document.activeElement;
+    drawer.classList.add('open'); scrim.classList.add('open');
+    drawer.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true');
+    pageParts.forEach(function (n) { n.inert = true; });
+    $('#bagClose').focus();
+  }
+  function closeBag() {
+    drawer.classList.remove('open'); scrim.classList.remove('open');
+    drawer.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false');
+    pageParts.forEach(function (n) { n.inert = false; });
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  toggle.addEventListener('click', function () { drawer.classList.contains('open') ? closeBag() : openBag(); });
+  $('#footerBag').addEventListener('click', openBag);
+  $('#bagClose').addEventListener('click', closeBag);
+  $('#bagBrowse').addEventListener('click', function () { lastFocus = null; closeBag(); });
+  scrim.addEventListener('click', closeBag);
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawer.classList.contains('open')) closeBag(); });
+  $('#checkout').addEventListener('click', function () {
+    $('#bagNote').textContent = 'Checkout is not connected yet. This page is a design preview, so no order has been placed.';
+  });
+
+  renderBag();
+})();
+</script>
