@@ -1,9 +1,9 @@
 <title>Shop224</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700&family=Pinyon+Script&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
 /* Layout: fixed transparent nav over a split hero (copy left, black stage with a live pendant right),
-   a four-point "why personalise" strip, a four-card product grid with live engraving previews,
+   a four-point "why personalise" strip, a four-card product grid with engraving text fields,
    a slide-in bag, and a black footer. Palette follows the project design system: cream 60, black 30, black accent 10. */
 :root {
   --cream: #fffdf5;
@@ -15,7 +15,6 @@
   --field: rgba(0, 0, 0, 0.38);
   --font-head: "Rasputin", "Cormorant Garamond", Georgia, serif;
   --font-body: "TT Norms", "Figtree", "Helvetica Neue", Arial, sans-serif;
-  --font-script: "Pinyon Script", "Snell Roundhand", cursive;
   --nav-h: 72px;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 28px rgba(0, 0, 0, 0.07);
   color-scheme: light;
@@ -48,17 +47,11 @@ button, input { font: inherit; color: inherit; }
 
 /* Metals */
 .f-head { font-family: var(--font-head); font-weight: 600; }
-.f-script { font-family: var(--font-script); }
-.f-body { font-family: var(--font-body); font-weight: 600; }
 [data-metal="gold"]   { --engrave: #2a2113; }
-[data-metal="silver"] { --engrave: #23262c; }
 [data-metal="gold"] .metal   { fill: url(#g-gold); }
-[data-metal="silver"] .metal { fill: url(#g-silver); }
 [data-metal="gold"] .stroke-metal   { stroke: url(#g-gold); }
-[data-metal="silver"] .stroke-metal { stroke: url(#g-silver); }
 .engrave { fill: var(--engrave); opacity: 0.86; transition: opacity 0.2s ease; }
-.is-empty .engrave, .is-empty .name-text { opacity: 0.3; }
-.name-text { transition: opacity 0.2s ease; stroke: rgba(0, 0, 0, 0.18); stroke-width: 0.6; }
+.is-empty .engrave { opacity: 0.3; }
 .sw-gold   { background: linear-gradient(135deg, #8a6a2b, #f3dc9a 40%, #b88a3a 65%, #f7e6b0); }
 .sw-silver { background: linear-gradient(135deg, #8d9096, #f4f5f7 40%, #a5a8ae 65%, #ffffff); }
 
@@ -157,11 +150,8 @@ button, input { font: inherit; color: inherit; }
 /* Product grid */
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
 .card { background: var(--white); border-radius: 4px; box-shadow: var(--shadow); display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
-.art { position: relative; overflow: hidden; background: radial-gradient(circle at 50% 40%, #fbf8ec, #eee8d4); aspect-ratio: 1 / 1; max-width: 100%; }
-.art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
-.art .overlay { position: absolute; inset: 0; pointer-events: none; }
-.overlay .engrave { paint-order: stroke; stroke: rgba(255, 255, 255, 0.6); stroke-width: 2.5; stroke-linejoin: round; }
-.art svg { display: block; width: 100%; height: 100%; }
+.art { background: radial-gradient(circle at 50% 40%, #fbf8ec, #eee8d4); aspect-ratio: 1 / 1; max-width: 100%; }
+.art img { display: block; width: 100%; height: 100%; object-fit: cover; }
 .card-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
 .title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .card h3 { font-family: var(--font-head); font-weight: 700; font-size: 1.4rem; line-height: 1.15; }
@@ -183,9 +173,8 @@ button, input { font: inherit; color: inherit; }
 }
 .field input::placeholder { color: rgba(0, 0, 0, 0.42); }
 .field input:focus { border-color: var(--ink); }
-.field-meta { display: flex; justify-content: space-between; gap: 12px; font-size: 0.8rem; color: var(--muted); }
-.field-meta .count { font-variant-numeric: tabular-nums; }
-.field-meta.warn .hint { color: var(--ink); font-weight: 600; }
+.hint { font-size: 0.8rem; color: var(--muted); }
+.hint.warn { color: var(--ink); font-weight: 600; }
 
 /* Footer */
 .footer { background: var(--ink); color: var(--cream); padding-block: 72px 40px; }
@@ -259,9 +248,6 @@ button, input { font: inherit; color: inherit; }
     <linearGradient id="g-gold" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
       <stop offset="0" stop-color="#8a6a2b"/><stop offset="0.3" stop-color="#f3dc9a"/><stop offset="0.55" stop-color="#b88a3a"/><stop offset="0.8" stop-color="#f7e6b0"/><stop offset="1" stop-color="#9a7430"/>
     </linearGradient>
-    <linearGradient id="g-silver" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
-      <stop offset="0" stop-color="#8d9096"/><stop offset="0.3" stop-color="#f4f5f7"/><stop offset="0.55" stop-color="#a5a8ae"/><stop offset="0.8" stop-color="#ffffff"/><stop offset="1" stop-color="#8d9096"/>
-    </linearGradient>
   </defs>
 </svg>
 
@@ -332,7 +318,7 @@ button, input { font: inherit; color: inherit; }
     <div class="wrap">
       <div class="section-head">
         <h2>The collection</h2>
-        <p>Choose a metal, type your engraving and watch the preview change as you type. Each piece below shows an example you can replace.</p>
+        <p>Choose a metal, type your text and add the piece to your bag.</p>
       </div>
       <div class="grid" id="grid"></div>
     </div>
@@ -411,77 +397,33 @@ button, input { font: inherit; color: inherit; }
       '<text class="engrave f-head pt-text" x="200" y="292" dy="0.33em" text-anchor="middle" font-size="68">M</text>' +
       '</svg>';
   }
-  /* Transparent layer that carries only the live engraving text, sitting on top of the product photo.
-     It shares the 400 x 400 box with the photo, so x/y below are percentages of the picture. */
-  function over(inner) {
-    return '<svg class="overlay" viewBox="0 0 400 400" aria-hidden="true" focusable="false">' + inner + '</svg>';
-  }
-
   /* ---------- Products ---------- */
   function setEmpty(card, empty) { card.classList.toggle('is-empty', empty); }
 
   var PRODUCTS = [
     {
-      id: 'initial', name: 'Initial Necklace', price: 749, max: 3, sample: 'M',
+      id: 'initial', name: 'Initial Necklace', price: 749, max: 3,
       placeholder: 'e.g. M or MJK', hint: 'Up to 3 letters',
       desc: 'A polished disc pendant on a fine chain, engraved with up to three initials.',
-      art: function () {
-        return '<img src="initial necklace.jpg" alt="Initial necklace">' +
-          over('<text class="engrave f-head pt-text" x="200" y="290" dy="0.33em" text-anchor="middle" font-size="68">M</text>');
-      },
-      update: function (card, t) {
-        var c = chars(t.toUpperCase());
-        var el = $('.pt-text', card);
-        el.textContent = c.join('');
-        el.setAttribute('font-size', c.length <= 1 ? 68 : c.length === 2 ? 50 : 38);
-      }
+      art: function () { return '<img src="initial necklace.jpg" alt="Initial necklace">'; }
     },
     {
-      id: 'bracelet', name: 'Letter Bracelet', price: 849, max: 10, sample: 'FOREVER',
+      id: 'bracelet', name: 'Letter Bracelet', price: 849, max: 10,
       placeholder: 'e.g. LOVE', hint: 'Up to 10 letters',
       desc: 'A bracelet that spells out a name or a word, one letter at a time.',
-      art: function () {
-        return '<img src="letter bracelet.jpg" alt="Letter bracelet">' +
-          over('<text class="engrave f-head lb-text" x="200" y="300" dy="0.33em" text-anchor="middle" font-size="36">FOREVER</text>');
-      },
-      update: function (card, t) {
-        var c = chars(t.toUpperCase());
-        var el = $('.lb-text', card);
-        el.textContent = c.join('');
-        var size = Math.max(16, Math.min(40, 300 / (c.length * 0.85 + 1)));
-        el.setAttribute('font-size', size.toFixed(1));
-        el.setAttribute('letter-spacing', (size * 0.2).toFixed(1));
-      }
+      art: function () { return '<img src="letter bracelet.jpg" alt="Letter bracelet">'; }
     },
     {
-      id: 'compass', name: 'Compass Necklace', price: 899, max: 8, sample: 'ANNA',
+      id: 'compass', name: 'Compass Necklace', price: 899, max: 8,
       placeholder: 'e.g. a name or a word', hint: 'Up to 8 characters',
       desc: 'A compass pendant on a fine chain, engraved with a short name or word.',
-      art: function () {
-        return '<img src="compass necklace.jpg" alt="Compass necklace">' +
-          over('<text class="engrave f-head cp-text" x="200" y="290" dy="0.33em" text-anchor="middle" font-size="44">ANNA</text>');
-      },
-      update: function (card, t) {
-        var c = chars(t.toUpperCase());
-        var el = $('.cp-text', card);
-        el.textContent = c.join('');
-        el.setAttribute('font-size', c.length <= 2 ? 60 : c.length <= 4 ? 44 : c.length <= 6 ? 32 : 26);
-      }
+      art: function () { return '<img src="compass necklace.jpg" alt="Compass necklace">'; }
     },
     {
-      id: 'studs', name: 'Stud Earrings', price: 599, max: 2, sample: 'SK',
+      id: 'studs', name: 'Stud Earrings', price: 599, max: 2,
       placeholder: 'e.g. SK', hint: 'One letter each. Type one to match.',
       desc: 'Round studs with a letter on each. Type two for a pair, or one for a match.',
-      art: function () {
-        return '<img src="stud earrings.png" alt="Stud earrings">' +
-          over('<text class="engrave f-head st-l" x="114" y="200" dy="0.33em" text-anchor="middle" font-size="58">S</text>' +
-               '<text class="engrave f-head st-r" x="286" y="200" dy="0.33em" text-anchor="middle" font-size="58">K</text>');
-      },
-      update: function (card, t) {
-        var c = chars(t.toUpperCase());
-        $('.st-l', card).textContent = c[0];
-        $('.st-r', card).textContent = c[1] || c[0];
-      }
+      art: function () { return '<img src="stud earrings.png" alt="Stud earrings">'; }
     }
   ];
   var BY_ID = {};
@@ -505,61 +447,41 @@ button, input { font: inherit; color: inherit; }
         '<p class="desc">' + p.desc + '</p>' +
         '<fieldset class="metals"><legend class="sr">Metal</legend>' + metalRadios(p) + '<span class="metal-name">Gold</span></fieldset>' +
         '<div class="field">' +
-          '<label for="in-' + p.id + '">Enter Engraving Text</label>' +
-          '<input id="in-' + p.id + '" type="text" maxlength="' + p.max + '" value="' + p.sample + '" placeholder="' + p.placeholder + '" autocomplete="off" spellcheck="false" aria-describedby="hint-' + p.id + '">' +
-          '<div class="field-meta"><span class="hint" id="hint-' + p.id + '">' + p.hint + '</span><span class="count" aria-hidden="true"></span></div>' +
+          '<label for="in-' + p.id + '">Enter Text</label>' +
+          '<input id="in-' + p.id + '" type="text" maxlength="' + p.max + '" placeholder="' + p.placeholder + '" autocomplete="off" spellcheck="false" aria-describedby="hint-' + p.id + '">' +
+          '<p class="hint" id="hint-' + p.id + '">' + p.hint + '</p>' +
         '</div>' +
         '<button class="btn btn-block" type="button">Personalise Now</button>' +
       '</div>';
 
-    var photo = $('.art img', card);
-    function noPhoto() { photo.hidden = true; }
-    photo.addEventListener('error', noPhoto);
-    if (photo.complete && photo.naturalWidth === 0) noPhoto();
-
     var input = $('input[type="text"]', card);
-    var meta = $('.field-meta', card);
     var hint = $('.hint', card);
-    var count = $('.count', card);
 
-    function refresh() {
-      var raw = input.value.trim();
-      setEmpty(card, !raw);
-      p.update(card, raw || p.sample);
-      count.textContent = chars(input.value).length + '/' + p.max;
-    }
     input.addEventListener('input', function () {
-      meta.classList.remove('warn');
+      hint.classList.remove('warn');
       hint.textContent = p.hint;
-      refresh();
     });
     card.addEventListener('change', function (e) {
       if (e.target.name === 'metal-' + p.id) {
         card.setAttribute('data-metal', e.target.value);
         $('.metal-name', card).textContent = METALS[e.target.value];
-        refresh();
       }
     });
     $('.btn', card).addEventListener('click', function () {
       var text = input.value.trim();
       if (!text) {
-        meta.classList.add('warn');
-        hint.textContent = 'Type your engraving first.';
+        hint.classList.add('warn');
+        hint.textContent = 'Enter your text first.';
         input.focus();
         return;
       }
       addToBag(p, card.getAttribute('data-metal'), text);
     });
-    card._refresh = refresh;
-    refresh();
     return card;
   }
 
   var grid = $('#grid');
-  var cards = PRODUCTS.map(function (p) { var c = buildCard(p); grid.appendChild(c); return c; });
-  if (document.fonts && document.fonts.ready) {
-    document.fonts.ready.then(function () { cards.forEach(function (c) { c._refresh(); }); });
-  }
+  PRODUCTS.forEach(function (p) { grid.appendChild(buildCard(p)); });
 
   /* ---------- Hero ---------- */
   var stage = $('#stage');
@@ -677,10 +599,6 @@ button, input { font: inherit; color: inherit; }
   $('#checkout').addEventListener('click', function () {
     $('#bagNote').textContent = 'Checkout is not connected yet. This page is a design preview, so no order has been placed.';
   });
-
-  renderBag();
-})();
-</script>
 
   renderBag();
 })();
