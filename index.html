@@ -52,19 +52,15 @@ button, input { font: inherit; color: inherit; }
 .f-body { font-family: var(--font-body); font-weight: 600; }
 [data-metal="gold"]   { --engrave: #2a2113; }
 [data-metal="silver"] { --engrave: #23262c; }
-[data-metal="rose"]   { --engrave: #3a1e19; }
 [data-metal="gold"] .metal   { fill: url(#g-gold); }
 [data-metal="silver"] .metal { fill: url(#g-silver); }
-[data-metal="rose"] .metal   { fill: url(#g-rose); }
 [data-metal="gold"] .stroke-metal   { stroke: url(#g-gold); }
 [data-metal="silver"] .stroke-metal { stroke: url(#g-silver); }
-[data-metal="rose"] .stroke-metal   { stroke: url(#g-rose); }
 .engrave { fill: var(--engrave); opacity: 0.86; transition: opacity 0.2s ease; }
 .is-empty .engrave, .is-empty .name-text { opacity: 0.3; }
 .name-text { transition: opacity 0.2s ease; stroke: rgba(0, 0, 0, 0.18); stroke-width: 0.6; }
 .sw-gold   { background: linear-gradient(135deg, #8a6a2b, #f3dc9a 40%, #b88a3a 65%, #f7e6b0); }
 .sw-silver { background: linear-gradient(135deg, #8d9096, #f4f5f7 40%, #a5a8ae 65%, #ffffff); }
-.sw-rose   { background: linear-gradient(135deg, #a9645a, #f2c4b5 40%, #c27d6e 65%, #f7d9cd); }
 
 /* Buttons */
 .btn {
@@ -161,7 +157,10 @@ button, input { font: inherit; color: inherit; }
 /* Product grid */
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 24px; }
 .card { background: var(--white); border-radius: 4px; box-shadow: var(--shadow); display: flex; flex-direction: column; min-width: 0; overflow: hidden; }
-.art { background: radial-gradient(circle at 50% 40%, #fbf8ec, #eee8d4); aspect-ratio: 1 / 1; max-width: 100%; }
+.art { position: relative; overflow: hidden; background: radial-gradient(circle at 50% 40%, #fbf8ec, #eee8d4); aspect-ratio: 1 / 1; max-width: 100%; }
+.art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.art .overlay { position: absolute; inset: 0; pointer-events: none; }
+.overlay .engrave { paint-order: stroke; stroke: rgba(255, 255, 255, 0.6); stroke-width: 2.5; stroke-linejoin: round; }
 .art svg { display: block; width: 100%; height: 100%; }
 .card-body { padding: 20px; display: flex; flex-direction: column; gap: 16px; flex: 1; }
 .title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
@@ -262,9 +261,6 @@ button, input { font: inherit; color: inherit; }
     </linearGradient>
     <linearGradient id="g-silver" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
       <stop offset="0" stop-color="#8d9096"/><stop offset="0.3" stop-color="#f4f5f7"/><stop offset="0.55" stop-color="#a5a8ae"/><stop offset="0.8" stop-color="#ffffff"/><stop offset="1" stop-color="#8d9096"/>
-    </linearGradient>
-    <linearGradient id="g-rose" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
-      <stop offset="0" stop-color="#a9645a"/><stop offset="0.3" stop-color="#f2c4b5"/><stop offset="0.55" stop-color="#c27d6e"/><stop offset="0.8" stop-color="#f7d9cd"/><stop offset="1" stop-color="#a9645a"/>
     </linearGradient>
   </defs>
 </svg>
@@ -397,7 +393,7 @@ button, input { font: inherit; color: inherit; }
 <script>
 (function () {
   var $ = function (s, r) { return (r || document).querySelector(s); };
-  var METALS = { gold: 'Gold', silver: 'Silver', rose: 'Rose gold' };
+  var METALS = { gold: 'Gold', silver: 'Silver' };
   var STORE_KEY = 'shop224-bag';
 
   function fmt(n) { return 'R ' + n.toLocaleString('en-ZA'); }
@@ -415,37 +411,10 @@ button, input { font: inherit; color: inherit; }
       '<text class="engrave f-head pt-text" x="200" y="292" dy="0.33em" text-anchor="middle" font-size="68">M</text>' +
       '</svg>';
   }
-  function nameSVG() {
-    return '<svg viewBox="0 0 400 400" role="img" aria-label="Name necklace preview">' +
-      '<path class="stroke-metal nm-l" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2" d="M64 -10 Q 90 150 140 240"/>' +
-      '<path class="stroke-metal nm-r" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2" d="M336 -10 Q 310 150 260 240"/>' +
-      '<circle class="stroke-metal nm-lr" cx="140" cy="240" r="5" fill="none" stroke-width="3"/>' +
-      '<circle class="stroke-metal nm-rr" cx="260" cy="240" r="5" fill="none" stroke-width="3"/>' +
-      '<text class="metal name-text f-script nm-text" x="200" y="275" text-anchor="middle" font-size="84">Amara</text>' +
-      '</svg>';
-  }
-  function studSVG() {
-    function stud(cx) {
-      return '<ellipse cx="' + cx + '" cy="300" rx="50" ry="7" fill="rgba(0,0,0,0.12)"/>' +
-        '<circle class="metal" cx="' + cx + '" cy="200" r="66"/>' +
-        '<circle cx="' + cx + '" cy="200" r="56" fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="1"/>' +
-        '<path d="M' + (cx - 46) + ' 176 A56 56 0 0 1 ' + (cx + 14) + ' 146" fill="none" stroke="#fff" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>';
-    }
-    return '<svg viewBox="0 0 400 400" role="img" aria-label="Stud earrings preview">' +
-      stud(114) + stud(286) +
-      '<text class="engrave f-head st-l" x="114" y="200" dy="0.33em" text-anchor="middle" font-size="58">S</text>' +
-      '<text class="engrave f-head st-r" x="286" y="200" dy="0.33em" text-anchor="middle" font-size="58">K</text>' +
-      '</svg>';
-  }
-  function barSVG() {
-    return '<svg viewBox="0 0 400 400" role="img" aria-label="Bar bracelet preview">' +
-      '<ellipse class="stroke-metal" cx="200" cy="186" rx="152" ry="112" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2"/>' +
-      '<circle class="stroke-metal" cx="200" cy="74" r="8" fill="none" stroke-width="3.4"/>' +
-      '<ellipse cx="200" cy="344" rx="110" ry="8" fill="rgba(0,0,0,0.12)"/>' +
-      '<rect class="metal" x="96" y="276" width="208" height="46" rx="8"/>' +
-      '<rect x="102" y="282" width="196" height="34" rx="5" fill="none" stroke="rgba(0,0,0,0.25)" stroke-width="1"/>' +
-      '<text class="engrave f-body bar-text" x="200" y="299" dy="0.35em" text-anchor="middle" font-size="17" letter-spacing="2">FOREVER YOURS</text>' +
-      '</svg>';
+  /* Transparent layer that carries only the live engraving text, sitting on top of the product photo.
+     It shares the 400 x 400 box with the photo, so x/y below are percentages of the picture. */
+  function over(inner) {
+    return '<svg class="overlay" viewBox="0 0 400 400" aria-hidden="true" focusable="false">' + inner + '</svg>';
   }
 
   /* ---------- Products ---------- */
@@ -453,10 +422,13 @@ button, input { font: inherit; color: inherit; }
 
   var PRODUCTS = [
     {
-      id: 'initial', name: 'Initial Disc Necklace', price: 749, max: 3, sample: 'M',
+      id: 'initial', name: 'Initial Necklace', price: 749, max: 3, sample: 'M',
       placeholder: 'e.g. M or MJK', hint: 'Up to 3 letters',
       desc: 'A polished disc pendant on a fine chain, engraved with up to three initials.',
-      art: function () { return pendantSVG('Initial disc necklace preview'); },
+      art: function () {
+        return '<img src="images/initial necklace.jpg" alt="Initial necklace">' +
+          over('<text class="engrave f-head pt-text" x="200" y="290" dy="0.33em" text-anchor="middle" font-size="68">M</text>');
+      },
       update: function (card, t) {
         var c = chars(t.toUpperCase());
         var el = $('.pt-text', card);
@@ -465,50 +437,50 @@ button, input { font: inherit; color: inherit; }
       }
     },
     {
-      id: 'name', name: 'Script Name Necklace', price: 1099, max: 12, sample: 'Amara',
-      placeholder: 'e.g. Amara', hint: 'Up to 12 characters',
-      desc: 'Your name in flowing script, hung from a fine chain.',
-      art: nameSVG,
+      id: 'bracelet', name: 'Letter Bracelet', price: 849, max: 10, sample: 'FOREVER',
+      placeholder: 'e.g. LOVE', hint: 'Up to 10 letters',
+      desc: 'A bracelet that spells out a name or a word, one letter at a time.',
+      art: function () {
+        return '<img src="images/letter bracelet.jpg" alt="Letter bracelet">' +
+          over('<text class="engrave f-head lb-text" x="200" y="300" dy="0.33em" text-anchor="middle" font-size="36">FOREVER</text>');
+      },
       update: function (card, t) {
-        var n = chars(t).length;
-        var size = n <= 4 ? 92 : n <= 6 ? 78 : n <= 8 ? 64 : n <= 10 ? 54 : 46;
-        var el = $('.nm-text', card);
-        el.textContent = t;
-        el.setAttribute('font-size', size);
-        var bb;
-        try { bb = el.getBBox(); } catch (e) { return; }
-        if (!bb || !bb.width) return;
-        var y = 275 - size * 0.3, lx = bb.x - 3, rx = bb.x + bb.width + 3;
-        $('.nm-l', card).setAttribute('d', 'M64 -10 Q ' + (lx - 14) + ' ' + (y - 100) + ' ' + lx + ' ' + y);
-        $('.nm-r', card).setAttribute('d', 'M336 -10 Q ' + (rx + 14) + ' ' + (y - 100) + ' ' + rx + ' ' + y);
-        var a = $('.nm-lr', card), b = $('.nm-rr', card);
-        a.setAttribute('cx', lx); a.setAttribute('cy', y);
-        b.setAttribute('cx', rx); b.setAttribute('cy', y);
+        var c = chars(t.toUpperCase());
+        var el = $('.lb-text', card);
+        el.textContent = c.join('');
+        var size = Math.max(16, Math.min(40, 300 / (c.length * 0.85 + 1)));
+        el.setAttribute('font-size', size.toFixed(1));
+        el.setAttribute('letter-spacing', (size * 0.2).toFixed(1));
       }
     },
     {
-      id: 'studs', name: 'Engraved Stud Earrings', price: 599, max: 2, sample: 'SK',
+      id: 'compass', name: 'Compass Necklace', price: 899, max: 8, sample: 'ANNA',
+      placeholder: 'e.g. a name or a word', hint: 'Up to 8 characters',
+      desc: 'A compass pendant on a fine chain, engraved with a short name or word.',
+      art: function () {
+        return '<img src="images/compass necklace.jpg" alt="Compass necklace">' +
+          over('<text class="engrave f-head cp-text" x="200" y="290" dy="0.33em" text-anchor="middle" font-size="44">ANNA</text>');
+      },
+      update: function (card, t) {
+        var c = chars(t.toUpperCase());
+        var el = $('.cp-text', card);
+        el.textContent = c.join('');
+        el.setAttribute('font-size', c.length <= 2 ? 60 : c.length <= 4 ? 44 : c.length <= 6 ? 32 : 26);
+      }
+    },
+    {
+      id: 'studs', name: 'Stud Earrings', price: 599, max: 2, sample: 'SK',
       placeholder: 'e.g. SK', hint: 'One letter each. Type one to match.',
       desc: 'Round studs with a letter on each. Type two for a pair, or one for a match.',
-      art: studSVG,
+      art: function () {
+        return '<img src="images/stud earrings.png" alt="Stud earrings">' +
+          over('<text class="engrave f-head st-l" x="114" y="200" dy="0.33em" text-anchor="middle" font-size="58">S</text>' +
+               '<text class="engrave f-head st-r" x="286" y="200" dy="0.33em" text-anchor="middle" font-size="58">K</text>');
+      },
       update: function (card, t) {
         var c = chars(t.toUpperCase());
         $('.st-l', card).textContent = c[0];
         $('.st-r', card).textContent = c[1] || c[0];
-      }
-    },
-    {
-      id: 'bar', name: 'Engraved Bar Bracelet', price: 849, max: 18, sample: 'Forever yours',
-      placeholder: 'e.g. a date or a word', hint: 'Up to 18 characters',
-      desc: 'A slim chain bracelet with a bar for a date, a word or a short message.',
-      art: barSVG,
-      update: function (card, t) {
-        var c = chars(t.toUpperCase());
-        var el = $('.bar-text', card);
-        el.textContent = c.join('');
-        var size = Math.max(10, Math.min(20, 178 / (c.length * 0.8)));
-        el.setAttribute('font-size', size.toFixed(1));
-        el.setAttribute('letter-spacing', (size * 0.12).toFixed(1));
       }
     }
   ];
@@ -539,6 +511,11 @@ button, input { font: inherit; color: inherit; }
         '</div>' +
         '<button class="btn btn-block" type="button">Personalise Now</button>' +
       '</div>';
+
+    var photo = $('.art img', card);
+    function noPhoto() { photo.hidden = true; }
+    photo.addEventListener('error', noPhoto);
+    if (photo.complete && photo.naturalWidth === 0) noPhoto();
 
     var input = $('input[type="text"]', card);
     var meta = $('.field-meta', card);
@@ -700,6 +677,10 @@ button, input { font: inherit; color: inherit; }
   $('#checkout').addEventListener('click', function () {
     $('#bagNote').textContent = 'Checkout is not connected yet. This page is a design preview, so no order has been placed.';
   });
+
+  renderBag();
+})();
+</script>
 
   renderBag();
 })();
