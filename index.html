@@ -1,9 +1,14 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Shop224</title>
-<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Personalised jewellery made to order with the words that matter to you.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: fixed transparent nav over a split hero (copy left, black stage with a live pendant right),
-   a four-point "why personalise" strip, a four-card product grid with engraving text fields,
+/* Layout: fixed transparent nav over a text hero,
+   a four-point "why personalise" strip, a four-card product grid with personalisation text fields,
    a slide-in bag, and a black footer. Palette follows the project design system: cream 60, black 30, black accent 10. */
 :root {
   --cream: #fffdf5;
@@ -23,6 +28,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
+  margin: 0;
   background: var(--cream);
   color: var(--ink);
   font-family: var(--font-body);
@@ -31,10 +37,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 h1, h2, h3, p { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
 a { color: inherit; }
 button, input { font: inherit; color: inherit; }
 :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
-.on-dark :focus-visible, .footer :focus-visible { outline-color: var(--cream); }
+.footer :focus-visible { outline-color: var(--cream); }
 .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 
 .wrap {
@@ -46,12 +54,6 @@ button, input { font: inherit; color: inherit; }
 }
 
 /* Metals */
-.f-head { font-family: var(--font-head); font-weight: 600; }
-[data-metal="gold"]   { --engrave: #2a2113; }
-[data-metal="gold"] .metal   { fill: url(#g-gold); }
-[data-metal="gold"] .stroke-metal   { stroke: url(#g-gold); }
-.engrave { fill: var(--engrave); opacity: 0.86; transition: opacity 0.2s ease; }
-.is-empty .engrave { opacity: 0.3; }
 .sw-gold   { background: linear-gradient(135deg, #8a6a2b, #f3dc9a 40%, #b88a3a 65%, #f7e6b0); }
 .sw-silver { background: linear-gradient(135deg, #8d9096, #f4f5f7 40%, #a5a8ae 65%, #ffffff); }
 
@@ -99,9 +101,38 @@ button, input { font: inherit; color: inherit; }
   font-variant-numeric: tabular-nums;
 }
 
+/* Navigation: links, bag and (on narrow screens) a menu button */
+.nav-right { display: flex; align-items: center; gap: 24px; }
+.links { gap: 24px; }
+.links a { white-space: nowrap; }
+.links a[aria-current="page"] { box-shadow: inset 0 -1px 0 var(--ink); }
+.menu-btn { display: none; align-items: center; background: none; border: 0; padding: 6px 0; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: opacity 0.2s ease; }
+.menu-btn:hover { opacity: 0.6; }
+@media (max-width: 1100px) {
+  .nav-right { gap: 20px; }
+  .menu-btn { display: inline-flex; }
+  .links {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 4px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
+    background: var(--white); box-shadow: 0 1px 0 var(--line), 0 16px 28px rgba(0, 0, 0, 0.08);
+  }
+  .nav.menu-open .links { display: flex; }
+  .nav.menu-open { background: var(--white); }
+  .links a { padding: 14px 0; font-size: 1rem; border-top: 1px solid var(--line); }
+  .links a:first-child { border-top: 0; }
+  .links a[aria-current="page"] { box-shadow: none; font-weight: 600; }
+}
+
+/* Slogan under the logo (index page) */
+.brand { display: grid; gap: 5px; justify-items: start; }
+.tagline { font-size: 0.62rem; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; line-height: 1; white-space: nowrap; color: var(--muted); }
+.footer .tagline { font-size: 0.68rem; color: rgba(255, 253, 245, 0.6); }
+@media (max-width: 560px) { .tagline { letter-spacing: 0.14em; } }
+
 /* Hero */
-.hero { padding-top: calc(var(--nav-h) + 40px); padding-bottom: 88px; }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr); gap: clamp(32px, 5vw, 72px); align-items: center; }
+.hero { padding-top: calc(var(--nav-h) + 72px); padding-bottom: 96px; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr); }
 .eyebrow { font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
 .hero h1 {
   margin-top: 20px;
@@ -111,24 +142,6 @@ button, input { font: inherit; color: inherit; }
 }
 .lede { margin-top: 24px; max-width: 46ch; font-size: 1.08rem; color: var(--muted); }
 .hero-actions { margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
-
-.stage {
-  border-radius: 4px; color: var(--cream);
-  padding: clamp(20px, 3vw, 32px);
-  background: radial-gradient(circle at 50% 36%, #2b2a27 0%, #0b0b0a 58%, #000 100%);
-  display: grid; gap: 16px; min-width: 0;
-}
-.stage-top { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 253, 245, 0.7); }
-.stage svg { display: block; width: 100%; max-width: 400px; height: auto; margin-inline: auto; }
-.stage-field { display: grid; gap: 8px; max-width: 400px; width: 100%; margin-inline: auto; }
-.stage-field label { font-size: 0.85rem; color: rgba(255, 253, 245, 0.8); }
-.stage-field input {
-  width: 100%; padding: 12px 14px; border-radius: 4px;
-  background: transparent; border: 1px solid rgba(255, 253, 245, 0.45); color: var(--cream);
-  transition: border-color 0.2s ease;
-}
-.stage-field input::placeholder { color: rgba(255, 253, 245, 0.45); }
-.stage-field input:focus { border-color: var(--cream); }
 
 /* Sections */
 .section { padding-block: 88px; }
@@ -187,6 +200,14 @@ button, input { font: inherit; color: inherit; }
 .footer li a:hover, .footer li button:hover { opacity: 0.6; }
 .footer-base { margin-top: 56px; padding-top: 24px; border-top: 1px solid rgba(255, 253, 245, 0.2); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: 0.84rem; color: rgba(255, 253, 245, 0.6); }
 
+/* Footer: four columns and contact links */
+.footer-grid { grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)); }
+.footer-contact { margin-top: 18px !important; }
+.footer-contact a { opacity: 0.9; overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 /* Bag drawer */
 .scrim { position: fixed; inset: 0; z-index: 40; background: rgba(0, 0, 0, 0.42); opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
 .scrim.open { opacity: 1; visibility: visible; transition: opacity 0.3s ease; }
@@ -230,8 +251,6 @@ button, input { font: inherit; color: inherit; }
   .footer-grid > :first-child { grid-column: 1 / -1; }
 }
 @media (max-width: 560px) {
-  .links { gap: 20px; }
-  .links .hide-sm { display: none; }
   .hero { padding-bottom: 64px; }
   .section { padding-block: 64px; }
   .why-grid { grid-template-columns: minmax(0, 1fr); }
@@ -242,25 +261,28 @@ button, input { font: inherit; color: inherit; }
   *, *::before, *::after { transition: none !important; animation: none !important; }
 }
 </style>
-
-<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
-  <defs>
-    <linearGradient id="g-gold" gradientUnits="userSpaceOnUse" x1="60" y1="60" x2="340" y2="340" spreadMethod="reflect">
-      <stop offset="0" stop-color="#8a6a2b"/><stop offset="0.3" stop-color="#f3dc9a"/><stop offset="0.55" stop-color="#b88a3a"/><stop offset="0.8" stop-color="#f7e6b0"/><stop offset="1" stop-color="#9a7430"/>
-    </linearGradient>
-  </defs>
-</svg>
+</head>
+<body>
 
 <header class="nav" id="nav">
   <div class="wrap">
-    <a class="logo" href="#top" aria-label="Shop224, back to top">Shop224</a>
-    <nav class="links" aria-label="Main">
-      <a class="hide-sm" href="#why">Why personalise</a>
-      <a href="#collection">Collection</a>
+    <div class="brand"><a class="logo" href="#top" aria-label="Shop224, back to top">Shop224</a><span class="tagline">Today. Tomorrow. Forever</span></div>
+    <div class="nav-right">
+      <nav class="links" id="navLinks" aria-label="Main">
+        <a href="#why">Why personalise</a>
+        <a href="#collection">Collection</a>
+        <a href="about.html">About</a>
+        <a href="sizing.html">Sizing &amp; Care</a>
+        <a href="policies.html">Shipping &amp; Returns</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
       <button class="bag-btn" id="bagToggle" type="button" aria-controls="bag" aria-expanded="false">
         Bag <span class="badge" id="bagCount" aria-live="polite" hidden>0</span>
       </button>
-    </nav>
+      <button class="menu-btn" id="menuBtn" type="button" aria-controls="navLinks" aria-expanded="false">Menu</button>
+    </div>
   </div>
 </header>
 
@@ -270,20 +292,13 @@ button, input { font: inherit; color: inherit; }
       <div class="hero-copy">
         <p class="eyebrow">Personalised jewellery</p>
         <h1>Made with your name on&nbsp;it.</h1>
-        <p class="lede">Type an initial, a name or a short message and see it engraved on the piece before you order. Every piece is made for one person.</p>
+        <p class="lede">Add an initial, a name or a short message to the piece you choose. Every piece is made for one person.</p>
         <div class="hero-actions">
           <a class="btn" href="#collection">Shop the collection</a>
           <a class="textlink" href="#why">Why personalise</a>
         </div>
       </div>
-      <div class="stage on-dark" id="stage" data-metal="gold">
-        <div class="stage-top"><span>Live preview</span><span>Gold</span></div>
-        <div id="stageArt"></div>
-        <div class="stage-field">
-          <label for="heroInput">Try your initial</label>
-          <input id="heroInput" type="text" maxlength="2" value="M" placeholder="Type one or two letters" autocomplete="off" spellcheck="false">
-        </div>
-      </div>
+
     </div>
   </section>
 
@@ -308,7 +323,7 @@ button, input { font: inherit; color: inherit; }
         </div>
         <div class="why-item">
           <h3>Mark the moment</h3>
-          <p>Weddings, graduations, a new baby. An engraved piece becomes an heirloom for the next generation.</p>
+          <p>Weddings, graduations, a new baby. A personalised piece becomes an heirloom for the next generation.</p>
         </div>
       </div>
     </div>
@@ -318,7 +333,7 @@ button, input { font: inherit; color: inherit; }
     <div class="wrap">
       <div class="section-head">
         <h2>The collection</h2>
-        <p>Choose a metal, type your text and add the piece to your bag.</p>
+        <p>Choose gold or silver, type your text and add the piece to your bag. Gold pieces are 14K to 18K PVD gold plated stainless steel. Silver pieces are stainless steel.</p>
       </div>
       <div class="grid" id="grid"></div>
     </div>
@@ -329,25 +344,45 @@ button, input { font: inherit; color: inherit; }
   <div class="wrap">
     <div class="footer-grid">
       <div>
-        <a class="logo" href="#top">Shop224</a>
-        <p class="footer-blurb">Jewellery engraved to order with the words that matter to you.</p>
+        <div class="brand"><a class="logo" href="#top">Shop224</a><span class="tagline">Today. Tomorrow. Forever</span></div>
+        <p class="footer-blurb">Personalised jewellery made to order with the words that matter to you.</p>
+        <ul class="footer-contact">
+          <li><a href="mailto:shop224.info@gmail.com">shop224.info@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/shop224_za/" target="_blank" rel="noopener">Instagram @shop224_za</a></li>
+          <li><a href="https://www.tiktok.com/@shop224_za" target="_blank" rel="noopener">TikTok @shop224_za</a></li>
+        </ul>
       </div>
       <div>
-         
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="#collection">The collection</a></li>
+          <li><a href="#why">Why personalise</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="#top">Back to top</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Help</h3>
+        <ul>
+          <li><a href="sizing.html">Sizing &amp; Care</a></li>
+          <li><a href="policies.html">Shipping &amp; Returns</a></li>
+          <li><a href="contact.html">Contact &amp; FAQ</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="paia.html">PAIA Manual</a></li>
+        </ul>
+      </div>
       <div>
         <h3>Your order</h3>
         <ul>
           <li><button type="button" id="footerBag">View your bag</button></li>
-          <li>Free engraving on every piece</li>
+          <li>Free shipping and delivery</li>
           <li>Prices in South African rand</li>
         </ul>
       </div>
     </div>
     <div class="footer-base">
       <span>&copy; 2026 Shop224. All rights reserved.</span>
-        </div>
-    </footer>
-
       <span>Made for one person at a time.</span>
     </div>
   </div>
@@ -363,12 +398,12 @@ button, input { font: inherit; color: inherit; }
   </div>
   <ul class="bag-list" id="bagList"></ul>
   <div class="bag-empty" id="bagEmpty">
-    <p>Your bag is empty. Choose a piece, type your engraving and tap Personalise Now.</p>
+    <p>Your bag is empty. Choose a piece, enter your text and tap Personalise Now.</p>
     <a class="btn" href="#collection" id="bagBrowse">Browse the collection</a>
   </div>
   <div class="drawer-foot" id="bagFoot">
     <div class="subtotal"><span>Subtotal</span><span id="bagSubtotal">R 0</span></div>
-    <p class="foot-note" id="bagNote">Engraving is free. Shipping is calculated at checkout.</p>
+    <p class="foot-note" id="bagNote">Shipping and delivery are free.</p>
     <button class="btn btn-block" id="checkout" type="button">Checkout</button>
   </div>
 </aside>
@@ -380,28 +415,15 @@ button, input { font: inherit; color: inherit; }
   var STORE_KEY = 'shop224-bag';
 
   function fmt(n) { return 'R ' + n.toLocaleString('en-ZA'); }
-  function chars(s) { return Array.from(s); }
 
-  /* ---------- Illustrations (all drawn in a 400 x 400 box so the metal gradients line up) ---------- */
-  function pendantSVG(label) {
-    return '<svg viewBox="0 0 400 400" role="img" aria-label="' + label + '">' +
-      '<path class="stroke-metal" fill="none" stroke-width="3.4" stroke-linecap="round" stroke-dasharray="6 2.2" d="M64 -10 C 92 170 150 200 200 200 C 250 200 308 170 336 -10"/>' +
-      '<circle class="stroke-metal" cx="200" cy="214" r="9" fill="none" stroke-width="4"/>' +
-      '<ellipse cx="200" cy="372" rx="62" ry="7" fill="rgba(0,0,0,0.12)"/>' +
-      '<circle class="metal" cx="200" cy="292" r="68"/>' +
-      '<circle cx="200" cy="292" r="58" fill="none" stroke="rgba(0,0,0,0.28)" stroke-width="1"/>' +
-      '<path d="M150 262 A58 58 0 0 1 222 238" fill="none" stroke="#fff" stroke-opacity="0.5" stroke-width="3" stroke-linecap="round"/>' +
-      '<text class="engrave f-head pt-text" x="200" y="292" dy="0.33em" text-anchor="middle" font-size="68">M</text>' +
-      '</svg>';
-  }
   /* ---------- Products ---------- */
-  function setEmpty(card, empty) { card.classList.toggle('is-empty', empty); }
+
 
   var PRODUCTS = [
     {
       id: 'initial', name: 'Initial Necklace', price: 749, max: 3,
       placeholder: 'e.g. M or MJK', hint: 'Up to 3 letters',
-      desc: 'A polished disc pendant on a fine chain, engraved with up to three initials.',
+      desc: 'A necklace carrying the letter or letters of your choice, up to three.',
       art: function () { return '<img src="initial necklace.jpg" alt="Initial necklace">'; }
     },
     {
@@ -411,9 +433,9 @@ button, input { font: inherit; color: inherit; }
       art: function () { return '<img src="letter bracelet.jpg" alt="Letter bracelet">'; }
     },
     {
-      id: 'letter', name: 'Letter Necklace', price: 899, max: 8,
-      placeholder: 'e.g. a name or a word', hint: 'Up to 8 characters',
-      desc: 'A letter necklace on a fine chain, with a short name or word.',
+      id: 'letternecklace', name: 'Letter Necklace', price: 899, max: 10,
+      placeholder: 'e.g. AMARA', hint: 'Up to 10 letters',
+      desc: 'A necklace that spells out a name or a word, one letter at a time.',
       art: function () { return '<img src="letter necklace.jpg" alt="Letter necklace">'; }
     },
     {
@@ -480,26 +502,21 @@ button, input { font: inherit; color: inherit; }
   var grid = $('#grid');
   PRODUCTS.forEach(function (p) { grid.appendChild(buildCard(p)); });
 
-  /* ---------- Hero ---------- */
-  var stage = $('#stage');
-  $('#stageArt').innerHTML = pendantSVG('Live pendant preview');
-  var heroInput = $('#heroInput');
-  function heroRefresh() {
-    var raw = heroInput.value.trim();
-    setEmpty(stage, !raw);
-    var c = chars((raw || 'M').toUpperCase());
-    var el = $('.pt-text', stage);
-    el.textContent = c.join('');
-    el.setAttribute('font-size', c.length <= 1 ? 68 : 50);
-  }
-  heroInput.addEventListener('input', heroRefresh);
-  heroRefresh();
-
   /* ---------- Nav ---------- */
   var nav = $('#nav');
+  var menuBtn = $('#menuBtn');
   function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 8); }
   window.addEventListener('scroll', onScroll, { passive: true });
   onScroll();
+  function setMenu(open) {
+    nav.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuBtn.textContent = open ? 'Close' : 'Menu';
+  }
+  menuBtn.addEventListener('click', function () { setMenu(!nav.classList.contains('menu-open')); });
+  $('#navLinks').addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+  window.addEventListener('resize', function () { if (window.innerWidth > 1100) setMenu(false); });
 
   /* ---------- Bag ---------- */
   var bag = loadBag();
@@ -565,7 +582,7 @@ button, input { font: inherit; color: inherit; }
     $('#bagFoot').hidden = !has;
     $('#bagEmpty').hidden = has;
     $('#bagSubtotal').textContent = fmt(total);
-    $('#bagNote').textContent = 'Engraving is free. Shipping is calculated at checkout.';
+    $('#bagNote').textContent = 'Shipping and delivery are free.';
     var badge = $('#bagCount');
     badge.hidden = !has;
     badge.textContent = String(units);
@@ -598,5 +615,8 @@ button, input { font: inherit; color: inherit; }
   });
 
   renderBag();
+  if (location.hash === '#bag') openBag();
 })();
 </script>
+</body>
+</html>

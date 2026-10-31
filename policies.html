@@ -1,0 +1,470 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shipping &amp; Returns | Shop224</title>
+<meta name="description" content="How long Shop224 pieces take to make and deliver, shipping is free, and what happens if something is not right.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --cream: #fffdf5;
+  --ink: #000000;
+  --white: #ffffff;
+  --stone: #f3eedd;
+  --muted: #57544b;
+  --line: rgba(0, 0, 0, 0.14);
+  --field: rgba(0, 0, 0, 0.38);
+  --font-head: "Rasputin", "Cormorant Garamond", Georgia, serif;
+  --font-body: "TT Norms", "Figtree", "Helvetica Neue", Arial, sans-serif;
+  --nav-h: 72px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 28px rgba(0, 0, 0, 0.07);
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, h3, p { margin: 0; }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+a { color: inherit; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.on-dark :focus-visible, .footer :focus-visible { outline-color: var(--cream); }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.wrap {
+  width: 100%;
+  max-width: 1240px;
+  margin-inline: auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* Buttons and navigation */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  padding: 14px 24px;
+  border: 1px solid var(--ink); border-radius: 4px;
+  background: var(--ink); color: var(--white);
+  font-weight: 600; font-size: 0.95rem; line-height: 1; letter-spacing: 0.02em;
+  text-decoration: none; cursor: pointer;
+  transition: background-color 0.22s ease, color 0.22s ease, transform 0.22s ease;
+}
+.btn:hover { background: var(--white); color: var(--ink); }
+.btn:active { transform: translateY(1px); }
+.btn-block { width: 100%; }
+.textlink {
+  font-weight: 600; font-size: 0.95rem; text-decoration: none;
+  border-bottom: 1px solid var(--ink); padding-bottom: 2px;
+  transition: opacity 0.2s ease;
+}
+.textlink:hover { opacity: 0.6; }
+
+/* Navigation */
+.nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 30;
+  padding-top: env(safe-area-inset-top, 0px);
+  background: transparent;
+  transition: background-color 0.25s ease, box-shadow 0.25s ease;
+}
+.nav.scrolled { background: var(--white); box-shadow: 0 1px 0 var(--line); }
+.nav .wrap { display: flex; align-items: center; justify-content: space-between; height: var(--nav-h); }
+.logo { font-family: var(--font-head); font-weight: 600; font-size: 1.7rem; letter-spacing: 0.01em; text-decoration: none; line-height: 1; }
+.links { display: flex; align-items: center; gap: 32px; }
+.links a, .bag-btn {
+  font-size: 0.95rem; text-decoration: none; background: none; border: 0; padding: 6px 0; cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+.links a:hover, .bag-btn:hover { opacity: 0.6; }
+.bag-btn { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.badge {
+  min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px;
+  background: var(--ink); color: var(--white);
+  font-size: 0.75rem; font-weight: 600; line-height: 22px; text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Navigation: links, bag and (on narrow screens) a menu button */
+.nav-right { display: flex; align-items: center; gap: 24px; }
+.links { gap: 24px; }
+.links a { white-space: nowrap; }
+.links a[aria-current="page"] { box-shadow: inset 0 -1px 0 var(--ink); }
+.menu-btn { display: none; align-items: center; background: none; border: 0; padding: 6px 0; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: opacity 0.2s ease; }
+.menu-btn:hover { opacity: 0.6; }
+@media (max-width: 1100px) {
+  .nav-right { gap: 20px; }
+  .menu-btn { display: inline-flex; }
+  .links {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    flex-direction: column; align-items: stretch; gap: 0;
+    padding: 4px max(16px, env(safe-area-inset-right, 0px)) 12px max(16px, env(safe-area-inset-left, 0px));
+    background: var(--white); box-shadow: 0 1px 0 var(--line), 0 16px 28px rgba(0, 0, 0, 0.08);
+  }
+  .nav.menu-open .links { display: flex; }
+  .nav.menu-open { background: var(--white); }
+  .links a { padding: 14px 0; font-size: 1rem; border-top: 1px solid var(--line); }
+  .links a:first-child { border-top: 0; }
+  .links a[aria-current="page"] { box-shadow: none; font-weight: 600; }
+}
+
+.eyebrow { font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.lede { margin-top: 24px; max-width: 52ch; font-size: 1.08rem; color: var(--muted); }
+
+/* Sections */
+.section { padding-block: 88px; }
+.section-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px 48px; margin-bottom: 48px; }
+.section h2 {
+  font-family: var(--font-head); font-weight: 500;
+  font-size: clamp(2.1rem, 4.4vw, 3.3rem); line-height: 1.05; letter-spacing: -0.005em;
+  text-wrap: balance; max-width: 18ch;
+}
+.section-head p { max-width: 40ch; color: var(--muted); }
+#why, #collection { scroll-margin-top: calc(var(--nav-h) - 8px); }
+
+/* Footer */
+.footer { background: var(--ink); color: var(--cream); padding-block: 72px 40px; }
+.footer-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(0, 1fr)); gap: 40px; }
+.footer .logo { font-size: 2rem; display: inline-block; }
+.footer-blurb { margin-top: 14px; max-width: 34ch; color: rgba(255, 253, 245, 0.7); }
+.footer h3 { font-size: 0.74rem; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255, 253, 245, 0.6); }
+.footer ul { list-style: none; padding: 0; margin: 16px 0 0; display: grid; gap: 10px; }
+.footer li a, .footer li button { background: none; border: 0; padding: 0; text-decoration: none; cursor: pointer; transition: opacity 0.2s ease; }
+.footer li a:hover, .footer li button:hover { opacity: 0.6; }
+.footer-base { margin-top: 56px; padding-top: 24px; border-top: 1px solid rgba(255, 253, 245, 0.2); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-size: 0.84rem; color: rgba(255, 253, 245, 0.6); }
+
+/* Inner pages */
+.page-head { padding-top: calc(var(--nav-h) + 56px); padding-bottom: 72px; }
+.page-head h1 {
+  margin-top: 20px; max-width: 16ch;
+  font-family: var(--font-head); font-weight: 500;
+  font-size: clamp(2.7rem, 6vw, 5rem); line-height: 1; letter-spacing: -0.01em;
+  text-wrap: balance;
+}
+.rule { border-top: 1px solid var(--line); }
+.item-grid { display: grid; gap: 40px 48px; }
+.item { border-top: 1px solid var(--ink); padding-top: 20px; }
+.item h3 { font-family: var(--font-head); font-weight: 600; font-size: 1.5rem; line-height: 1.15; }
+.item p { margin-top: 10px; color: var(--muted); font-size: 0.98rem; max-width: 46ch; }
+.item .textlink { display: inline-block; margin-top: 16px; }
+.pieces { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.steps { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 40px 32px; counter-reset: step; }
+.steps .item { counter-increment: step; }
+.steps .item::before { content: "Step " counter(step); display: block; margin-bottom: 12px; font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.split { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.4fr); gap: 32px 72px; align-items: start; }
+.split h2 { margin: 0; }
+.prose { display: grid; gap: 18px; max-width: 62ch; color: var(--muted); font-size: 1.04rem; }
+.checks { list-style: none; margin: 12px 0 0; padding: 0; display: grid; color: var(--ink); }
+.checks li { padding: 14px 0; border-top: 1px solid var(--line); font-weight: 600; }
+.checks li:last-child { border-bottom: 1px solid var(--line); }
+.checks a { text-decoration: none; border-bottom: 1px solid var(--ink); }
+.cta .section-head { margin-bottom: 0; align-items: center; }
+.cta-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; }
+
+/* Shipping & Returns */
+.jump { display: flex; flex-wrap: wrap; gap: 12px 28px; margin-top: 32px; }
+.facts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; margin: 0; }
+.fact { border-top: 1px solid var(--ink); padding-top: 16px; }
+.fact dt { font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.fact dd { margin: 8px 0 0; }
+.fact .big { font-family: var(--font-head); font-weight: 600; font-size: 1.7rem; line-height: 1.15; }
+.fact .note { margin-top: 6px; color: var(--muted); font-size: 0.94rem; }
+.policy-band { border-top: 1px solid var(--line); scroll-margin-top: calc(var(--nav-h) - 8px); }
+.policy { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr); gap: 24px 72px; padding-block: 64px; }
+.policy h2 { font-family: var(--font-head); font-weight: 500; font-size: clamp(1.9rem, 3.4vw, 2.6rem); line-height: 1.05; text-wrap: balance; }
+.rows { margin: 0; display: grid; }
+.rows > div { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 2fr); gap: 8px 32px; padding: 18px 0; border-top: 1px solid var(--line); }
+.rows > div:first-child { border-top: 0; padding-top: 0; }
+.rows dt { font-weight: 600; }
+.rows dd { margin: 0; color: var(--muted); max-width: 60ch; }
+.policy-note { margin-top: 24px; color: var(--muted); max-width: 60ch; }
+
+@media (max-width: 900px) {
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .split, .policy { grid-template-columns: minmax(0, 1fr); }
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .footer-grid > :first-child { grid-column: 1 / -1; }
+}
+@media (max-width: 700px) {
+  .pieces { grid-template-columns: minmax(0, 1fr); }
+  .facts { grid-template-columns: minmax(0, 1fr); }
+  .rows > div { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 560px) {
+  .page-head { padding-bottom: 48px; }
+  .section { padding-block: 64px; }
+  .policy { padding-block: 48px; }
+  .steps { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+}
+
+/* Footer: four columns and contact links */
+.footer-grid { grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(0, 1fr)); }
+.footer-contact { margin-top: 18px !important; }
+.footer-contact a { opacity: 0.9; overflow-wrap: anywhere; }
+@media (max-width: 900px) {
+  .footer-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* Text links inside body copy */
+a.inline { border-bottom: 1px solid currentColor; text-decoration: none; overflow-wrap: anywhere; transition: opacity 0.2s ease; }
+a.inline:hover { opacity: 0.6; }
+
+/* Tables */
+.table-wrap { overflow-x: auto; border-top: 1px solid var(--ink); }
+.table-wrap table { width: 100%; min-width: 520px; border-collapse: collapse; }
+.table-wrap th, .table-wrap td { text-align: left; vertical-align: top; padding: 14px 20px 14px 0; border-bottom: 1px solid var(--line); }
+.table-wrap th { font-size: 0.76rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.table-wrap td:first-child { font-weight: 600; white-space: nowrap; }
+.table-wrap td { color: var(--muted); }
+.table-wrap td:first-child { color: var(--ink); }
+.lead-in { margin-bottom: 20px; color: var(--muted); max-width: 60ch; }
+
+/* FAQ */
+.faq { border-bottom: 1px solid var(--line); max-width: 820px; }
+.faq details { border-top: 1px solid var(--line); }
+.faq summary { cursor: pointer; list-style: none; position: relative; padding: 20px 44px 20px 0; font-weight: 600; font-size: 1.05rem; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 1.5rem; font-weight: 400; line-height: 1; }
+.faq details[open] summary::after { content: "\2212"; }
+.faq .answer { padding: 0 44px 22px 0; color: var(--muted); max-width: 62ch; }
+
+/* Contact */
+.contact-grid { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.contact-item .big-link { display: inline-block; margin-top: 14px; font-family: var(--font-head); font-weight: 600; font-size: clamp(1.3rem, 2.6vw, 1.8rem); line-height: 1.15; overflow-wrap: anywhere; text-decoration: none; border-bottom: 1px solid var(--ink); }
+.contact-item .big-link:hover { opacity: 0.6; }
+
+/* Reviews */
+.review-grid { grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+.review { background: var(--white); border-radius: 4px; box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; min-width: 0; }
+.review img { display: block; width: 100%; aspect-ratio: 1 / 1; object-fit: cover; }
+.review-body { padding: 20px; display: grid; gap: 10px; }
+.stars { letter-spacing: 0.18em; font-size: 1.05rem; }
+.review-text { color: var(--ink); }
+.review-who { font-size: 0.86rem; color: var(--muted); }
+.empty { max-width: 720px; border: 1px solid var(--line); background: var(--white); border-radius: 4px; padding: clamp(24px, 4vw, 48px); display: grid; gap: 16px; }
+.empty h3 { font-family: var(--font-head); font-weight: 600; font-size: clamp(1.6rem, 3vw, 2.1rem); line-height: 1.1; }
+.empty p { color: var(--muted); max-width: 52ch; }
+.steps-inline { margin-top: 0; }
+
+/* Legal pages */
+.part-head { padding-block: 40px 8px; }
+.part-head h2 { font-family: var(--font-head); font-weight: 500; font-size: clamp(2.1rem, 4.4vw, 3.3rem); line-height: 1.05; text-wrap: balance; }
+.part-head p { margin-top: 12px; color: var(--muted); max-width: 62ch; }
+.legal { display: grid; gap: 14px; }
+.legal p { color: var(--muted); max-width: 64ch; }
+.legal ul { margin: 0; padding-left: 1.1em; display: grid; gap: 10px; color: var(--muted); max-width: 64ch; }
+.legal li::marker { color: var(--ink); }
+.legal strong { color: var(--ink); }
+.stamp { margin-top: 20px; font-size: 0.86rem; color: var(--muted); }
+.rows dd a.inline { color: var(--ink); }
+.rows dd ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; }
+</style>
+</head>
+<body>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="logo" href="index.html" aria-label="Shop224, home">Shop224</a>
+    <div class="nav-right">
+      <nav class="links" id="navLinks" aria-label="Main">
+        <a href="index.html#why">Why personalise</a>
+        <a href="index.html#collection">Collection</a>
+        <a href="about.html">About</a>
+        <a href="sizing.html">Sizing &amp; Care</a>
+        <a href="policies.html" aria-current="page">Shipping &amp; Returns</a>
+        <a href="reviews.html">Reviews</a>
+        <a href="contact.html">Contact</a>
+        <a href="privacy.html">Privacy</a>
+      </nav>
+      <a class="bag-btn" href="index.html#bag">
+        Bag <span class="badge" id="bagCount" hidden>0</span>
+      </a>
+      <button class="menu-btn" id="menuBtn" type="button" aria-controls="navLinks" aria-expanded="false">Menu</button>
+    </div>
+  </div>
+</header>
+
+<main id="main">
+  <section class="page-head" id="top">
+    <div class="wrap">
+      <p class="eyebrow">Shipping &amp; Returns</p>
+      <h1>Shipping and returns, in plain words.</h1>
+      <p class="lede">Every piece is personalised to order. Here is how long that takes, how your piece reaches you, and what happens if something is not right.</p>
+      <nav class="jump" aria-label="On this page">
+        <a class="textlink" href="#shipping">Shipping</a>
+        <a class="textlink" href="#returns">Returns</a>
+        <a class="textlink" href="#refunds">Refunds</a>
+        <a class="textlink" href="#help">Get help</a>
+      </nav>
+    </div>
+  </section>
+
+  <section class="section" style="padding-top:0; padding-bottom:64px">
+    <div class="wrap">
+      <dl class="facts">
+        <div class="fact">
+          <dt>Made to order</dt>
+          <dd class="big">3 to 5 business days</dd>
+          <dd class="note">Before your piece is sent.</dd>
+        </div>
+        <div class="fact">
+          <dt>Delivery</dt>
+          <dd class="big">2 to 3 weeks</dd>
+          <dd class="note">Once your order has been sent. Shipping and delivery are free.</dd>
+        </div>
+        <div class="fact">
+          <dt>Return window</dt>
+          <dd class="big">7 days</dd>
+          <dd class="note">From the day your piece arrives.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="policy-band" id="shipping">
+    <div class="wrap policy">
+      <h2>Shipping</h2>
+      <div>
+        <dl class="rows">
+          <div><dt>Making your piece</dt><dd>Every piece is personalised to order, so please allow 3 to 5 business days for it to be made before it is sent.</dd></div>
+          <div><dt>Delivery time</dt><dd>Delivery takes 2 to 3 weeks once your order has been sent.</dd></div>
+          <div><dt>Shipping cost</dt><dd>Shipping and delivery are free on every order.</dd></div>
+          <div><dt>Tracking</dt><dd>You will receive tracking details when your order is on its way.</dd></div>
+          <div><dt>Your address</dt><dd>Please check your address before you order. If a parcel comes back to us because of a wrong or incomplete address, we will contact you about sending it again.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+  <section class="policy-band" id="returns">
+    <div class="wrap policy">
+      <h2>Returns</h2>
+      <div>
+        <dl class="rows">
+          <div><dt>What we put right</dt><dd>A piece that is faulty, damaged on the way to you, personalised with different text from what you entered, or not the piece or metal you ordered.</dd></div>
+          <div><dt>What we cannot take back</dt><dd>Every piece is personalised with your own text, so we cannot take a piece back because you changed your mind or the text you entered had a mistake. Please check spelling, spacing and letters before you add a piece to your bag.</dd></div>
+          <div><dt>Time limit</dt><dd>Tell us within 7 days of your piece arriving.</dd></div>
+          <div><dt>Keep the packaging</dt><dd>Please keep the piece and its packaging so we can look at the problem.</dd></div>
+        </dl>
+      </div>
+    </div>
+  </section>
+  <section class="policy-band" id="refunds">
+    <div class="wrap policy">
+      <h2>Refunds and replacements</h2>
+      <div>
+        <dl class="rows">
+          <div><dt>Step 1</dt><dd>Contact us within 7 days of delivery with your order details and a photo of the problem.</dd></div>
+          <div><dt>Step 2</dt><dd>We will confirm what is wrong and tell you how to send the piece back.</dd></div>
+          <div><dt>Step 3</dt><dd>Once we have checked it, we will remake the piece or refund you, whichever you prefer.</dd></div>
+        </dl>
+        <p class="policy-note">Refunds go back to the original payment method.</p>
+      </div>
+    </div>
+  </section>
+  <section class="policy-band" id="help">
+    <div class="wrap policy">
+      <h2>Get help</h2>
+      <div>
+        <div class="prose">
+          <p>Questions about an order, a delivery or a return? Email <a class="inline" href="mailto:shop224.info@gmail.com">shop224.info@gmail.com</a> or message us on <a class="inline" href="https://www.instagram.com/shop224_za/" target="_blank" rel="noopener">Instagram</a> or <a class="inline" href="https://www.tiktok.com/@shop224_za" target="_blank" rel="noopener">TikTok</a> at @shop224_za, and include your order details. For a problem with a piece, please add a photo.</p>
+        </div>
+        <p class="policy-note"><a class="btn" href="index.html#collection">Back to the collection</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="footer" id="footer">
+  <div class="wrap">
+    <div class="footer-grid">
+      <div>
+        <a class="logo" href="index.html">Shop224</a>
+        <p class="footer-blurb">Personalised jewellery made to order with the words that matter to you.</p>
+        <ul class="footer-contact">
+          <li><a href="mailto:shop224.info@gmail.com">shop224.info@gmail.com</a></li>
+          <li><a href="https://www.instagram.com/shop224_za/" target="_blank" rel="noopener">Instagram @shop224_za</a></li>
+          <li><a href="https://www.tiktok.com/@shop224_za" target="_blank" rel="noopener">TikTok @shop224_za</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Explore</h3>
+        <ul>
+          <li><a href="index.html#collection">The collection</a></li>
+          <li><a href="index.html#why">Why personalise</a></li>
+          <li><a href="reviews.html">Reviews</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="#top">Back to top</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Help</h3>
+        <ul>
+          <li><a href="sizing.html">Sizing &amp; Care</a></li>
+          <li><a href="policies.html">Shipping &amp; Returns</a></li>
+          <li><a href="contact.html">Contact &amp; FAQ</a></li>
+          <li><a href="privacy.html">Privacy Policy</a></li>
+          <li><a href="paia.html">PAIA Manual</a></li>
+        </ul>
+      </div>
+      <div>
+        <h3>Your order</h3>
+        <ul>
+          <li><a href="index.html#bag">View your bag</a></li>
+          <li>Free shipping and delivery</li>
+          <li>Prices in South African rand</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-base">
+      <span>&copy; 2026 Shop224. All rights reserved.</span>
+      <span>Made for one person at a time.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  /* ---------- Nav ---------- */
+  var nav = $('#nav');
+  var menuBtn = $('#menuBtn');
+  function onScroll() { nav.classList.toggle('scrolled', window.scrollY > 8); }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+  function setMenu(open) {
+    nav.classList.toggle('menu-open', open);
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    menuBtn.textContent = open ? 'Close' : 'Menu';
+  }
+  menuBtn.addEventListener('click', function () { setMenu(!nav.classList.contains('menu-open')); });
+  $('#navLinks').addEventListener('click', function (e) { if (e.target.closest('a')) setMenu(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+  window.addEventListener('resize', function () { if (window.innerWidth > 1100) setMenu(false); });
+
+  /* Bag count, read from the bag saved by the shop page */
+  var IDS = ['initial', 'bracelet', 'letternecklace', 'studs'], METALS = ['gold', 'silver'], n = 0;
+  try {
+    var v = JSON.parse(localStorage.getItem('shop224-bag') || '[]');
+    if (Array.isArray(v)) v.forEach(function (i) {
+      if (i && IDS.indexOf(i.id) > -1 && METALS.indexOf(i.metal) > -1 && typeof i.text === 'string' && i.text &&
+          typeof i.qty === 'number' && i.qty >= 1 && i.qty <= 9) n += i.qty;
+    });
+  } catch (e) {}
+  if (n) { var b = $('#bagCount'); b.textContent = String(n); b.hidden = false; }
+})();
+</script>
+</body>
+</html>
