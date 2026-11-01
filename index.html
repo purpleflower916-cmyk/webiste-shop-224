@@ -759,8 +759,9 @@ document.getElementById('checkoutForm').addEventListener('submit', async functio
         const result = await response.json();
 
         if (response.status === 200 && result.success) {
-            // SUCCESS: Delivery info is safely sent to your email inbox
-            
+    // SUCCESS: Delivery info is safely in your email inbox, now open the thank you layout page
+    window.location.href = "thanks.html";
+}
             // Safe Number Extractor: Looks at inputs, elements, or defaults to 0 safely without crashing
             let rawTotal = '';
             const el1 = document.getElementById('orderTotal');
