@@ -449,7 +449,6 @@ button, input { font: inherit; color: inherit; }
       </div>
       <form class="co-form" id="checkoutForm" action="https://api.web3forms.com/submit" method="POST">
         <input type="hidden" name="access_key" value="7bd0a36a-bdf5-4114-9831-cda2a8f4a298">
-        <input type="hidden" name="redirect" value="https://pay.yoco.com/shop224">
         <input type="hidden" name="subject" value="New Shop224 order">
         <input type="hidden" name="from_name" value="Shop224 website">
         <input type="checkbox" name="botcheck" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -732,5 +731,48 @@ button, input { font: inherit; color: inherit; }
   if (location.hash === '#bag') openBag();
 })();
 </script>
+   <script>
+document.getElementById('checkoutForm').addEventListener('submit', function(e) {
+    e.preventDefault(); // Stop standard HTML redirection page reload
+    
+    const form = e.target;
+    const formData = new FormData(form);
+    const object = Object.fromEntries(formData);
+    const json = JSON.stringify(object);
+    
+    // Display a clean loading message on your checkout button
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerText;
+    submitBtn.innerText = "Securing Order details...";
+    submitBtn.disabled = true;
+
+    fetch('https://api.web3forms.com/submit', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: json
+    })
+    .then(async (response) => {
+        if (response.status == 200) {
+            // SUCCESS: Delivery info is in your email inbox, now push them to Yoco
+            window.location.href = "https://yoco.com";
+        } else {
+            console.error(response);
+            alert("Something went wrong saving details. Please try again.");
+            submitBtn.innerText = originalText;
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error(error);
+        alert("Network error. Please check your connection.");
+        submitBtn.innerText = originalText;
+        submitBtn.disabled = false;
+    });
+});
+</script>
+
 </body>
 </html>
