@@ -448,7 +448,8 @@ button, input { font: inherit; color: inherit; }
         <div class="co-total"><span>Total (delivery free)</span><span id="coTotal">R 0</span></div>
       </div>
       <form class="co-form" id="checkoutForm" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="7bd0a36a-bdf5-4114-9831-cda2a8f4a298">
+        <input type="hidden" name="access_key" value="ff845458-4bde-4ead-a2d8-edfcf2b146f0">
+        <input type="hidden" name="redirect" value="https://pay.yoco.com/shop224">
         <input type="hidden" name="subject" value="New Shop224 order">
         <input type="hidden" name="from_name" value="Shop224 website">
         <input type="checkbox" name="botcheck" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -472,7 +473,7 @@ button, input { font: inherit; color: inherit; }
           <textarea id="co-address" name="delivery_address" autocomplete="street-address" required></textarea>
         </div>
         <p class="co-error" id="coError" role="alert"></p>
-        <button class="btn btn-block" type="submit" id="coSubmit">Continue to payment</button>
+        <button class="btn btn-block" type="submit" id="coSubmit">Place order</button>
         <p class="co-note">Please check your text carefully. Every piece is made with your own text, so orders cannot be returned for a change of mind or a typo. Your details are used to make and deliver your order, as set out in our <a href="privacy.html">Privacy Policy</a>.</p>
       </form>
     </div>
@@ -714,88 +715,55 @@ button, input { font: inherit; color: inherit; }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawer.classList.contains('open')) closeBag(); });
   $('#checkout').addEventListener('click', function () { if (bag.length) setView('checkout'); });
   $('#backToBag').addEventListener('click', function () { setView('cart'); $('#checkout').focus(); });
-  $('#checkoutForm').addEventListener('submit', function (e) {
-    if (!bag.length) { e.preventDefault(); $('#coError').textContent = 'Your bag is empty.'; return; }
-    /* Fill the order into the form just before the native POST to Web3Forms */
-    $('#orderDetails').value = orderText();
+  var WEB3FORMS_URL = 'https://api.web3forms.com/submit';
+  var checkoutForm = $('#checkoutForm');
+  checkoutForm.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!bag.length) { $('#coError').textContent = 'Your bag is empty.'; return; }
+    var btn = $('#coSubmit');
+    var err = $('#coError');
+    err.textContent = '';
+    /* Put the full order into the form, then read everything as JSON */
+    var summary = orderText();
+    $('#orderDetails').value = summary;
     $('#orderTotal').value = fmt(cartTotal());
-    $('#coSubmit').disabled = true;
-    $('#coSubmit').textContent = 'Sending your order…';
+    var payload = {};
+    new FormData(checkoutForm).forEach(function (v, k) { payload[k] = v; });
+    delete payload.redirect;
+    btn.disabled = true;
+    btn.textContent = 'Securing Order details...';
+    var ctrl = new AbortController();
+    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    try {
+      var res = await fetch(WEB3FORMS_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload),
+        signal: ctrl.signal
+      });
+      var data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data && data.message ? data.message : 'Submission failed');
+      try { sessionStorage.setItem('shop224-last-order', JSON.stringify({ text: summary })); } catch (x) {}
+      bag = []; saveBag();
+      window.location.href = 'thanks.html';
+    } catch (ex) {
+      /* The order was NOT received: keep the bag and let the customer try again */
+      err.textContent = 'We could not send your order. Please check your connection and try again, or email shop224.info@gmail.com.';
+      btn.disabled = false;
+      btn.textContent = 'Place order';
+    } finally {
+      clearTimeout(timer);
+    }
   });
+
   /* Back/forward cache: re-enable the button if the customer returns from the payment page */
   window.addEventListener('pageshow', function () {
-    $('#coSubmit').disabled = false; $('#coSubmit').textContent = 'Continue to payment';
+    $('#coSubmit').disabled = false; $('#coSubmit').textContent = 'Place order';
   });
 
   renderBag();
   if (location.hash === '#bag') openBag();
 })();
 </script>
-   <script>
-document.getElementById('checkoutForm').addEventListener('submit', async function(e) {
-    e.preventDefault(); // Stop standard HTML redirection page reload
-    
-    const form = e.target;
-    const formData = new FormData(form);
-    const object = Object.fromEntries(formData);
-    const json = JSON.stringify(object);
-    
-    // Display a clean loading message on your checkout button
-    const submitBtn = form.querySelector('button[type="submit"]');
-    const originalText = submitBtn.innerText;
-    submitBtn.innerText = "Securing Order details...";
-    submitBtn.disabled = true;
-
-    try {
-        const response = await fetch('https://web3forms.com', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: json
-        });
-        
-        const result = await response.json();
-
-        if (response.status === 200 && result.success) {
-    // SUCCESS: Delivery info is safely in your email inbox, now open the thank you layout page
-    window.location.href = "thanks.html";
-}
-            // Safe Number Extractor: Looks at inputs, elements, or defaults to 0 safely without crashing
-            let rawTotal = '';
-            const el1 = document.getElementById('orderTotal');
-            const el2 = document.getElementById('cartTotalText');
-            
-            if (el1 && el1.value) { rawTotal = el1.value; }
-            else if (el2 && el2.innerText) { rawTotal = el2.innerText; }
-            
-            // Clean out everything except numbers
-            let cleanNumber = rawTotal.replace(/[^0-9]/g, ''); 
-
-            // Put your actual Yoco storefront slug here (e.g. shop224)
-            const yocoSlug = "shop224"; 
-            
-            if (cleanNumber && cleanNumber !== '0') {
-                window.location.href = "https://pay.yoco.com/shop224" + yocoSlug + "?amount=" + cleanNumber;
-            } else {
-                window.location.href = "https://pay.yoco.com/shop224" + yocoSlug;
-            }
-        } else {
-            alert("Something went wrong saving details. Please try again.");
-            submitBtn.innerText = originalText;
-            submitBtn.disabled = false;
-        }
-    } catch (error) {
-        // If an error happens, bypass the connection blocker and force a standard Yoco redirect to ensure you don't lose the sale
-        console.error(error);
-        window.location.href = "thanks.html";
-
-    }
-});
-</script>
-
-
-
 </body>
 </html>
