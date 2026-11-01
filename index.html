@@ -754,14 +754,21 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
         },
         body: json
     })
-    .then(async (response) => {
+        .then(async (response) => {
         if (response.status == 200) {
-            // SUCCESS: Delivery info is in your email inbox, now push them to Yoco
-            // Calculate the clean numeric total from your cart (assuming your total variable is named cartTotal or orderTotal)
-// We extract just the numbers from the cart total text
-const numericTotal = document.getElementById('orderTotal').value || document.getElementById('cartTotalText').innerText.replace(/[^0-9.]/g, '');
-// Redirect the customer to Yoco with the amount dynamically pre-filled and locked
-window.location.href = "https://pay.yoco.com/shop224" + numericTotal;
+            // SUCCESS: Delivery info is safely sent to your email inbox
+            
+            // 1. Grab the raw text total from the website screen
+            let rawTotal = document.getElementById('orderTotal').value || document.getElementById('cartTotalText').innerText;
+            
+            // 2. STOPS FRAUD/ERRORS: Strip away the "R", spaces, or formatting characters completely
+            let cleanNumber = rawTotal.replace(/[^0-9]/g, ''); // Keeps only raw numbers (e.g. 599)
+            
+            // 3. Force the absolute exact URL parameter structure
+            window.location.href = "https://yoco.com" + cleanNumber;
+        }
+    })
+
 
         } else {
             console.error(response);
