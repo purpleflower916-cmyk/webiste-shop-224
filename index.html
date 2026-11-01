@@ -760,7 +760,6 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
             // Calculate the clean numeric total from your cart (assuming your total variable is named cartTotal or orderTotal)
 // We extract just the numbers from the cart total text
 const numericTotal = document.getElementById('orderTotal').value || document.getElementById('cartTotalText').innerText.replace(/[^0-9.]/g, '');
-
 // Redirect the customer to Yoco with the amount dynamically pre-filled and locked
 window.location.href = "https://pay.yoco.com/shop224" + numericTotal;
 
