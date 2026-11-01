@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Logged | Shop224</title>
+    <link rel="stylesheet" href="https://googleapis.com">
+    <style>
+        /* Design System Foundations */
+        :root {
+            --cream: #fffdf5;
+            --ink: #000000;
+            --white: #ffffff;
+            --stone: #f3eedd;
+            --muted: #57544b;
+            --line: rgba(0, 0, 0, 0.14);
+            --font-head: "Cormorant Garamond", Georgia, serif;
+            --font-body: "Figtree", Arial, sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: var(--cream);
+            color: var(--ink);
+            font-family: var(--font-body);
+            font-size: 16px;
+            line-height: 1.55;
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 24px;
+        }
+
+        /* Thank You Wrapper Card */
+        .thank-you-card {
+            background: var(--white);
+            border-radius: 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 10px 28px rgba(0, 0, 0, 0.07);
+            max-width: 580px;
+            width: 100%;
+            padding: 48px 32px;
+            text-align: center;
+            border: 1px solid var(--line);
+        }
+
+        /* Success Icon Vector layout */
+        .success-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 28px auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #f7f5ee;
+            border-radius: 50%;
+        }
+
+        .success-icon svg {
+            width: 32px;
+            height: 32px;
+            stroke: var(--ink);
+            stroke-width: 2px;
+            fill: none;
+        }
+
+        h1 {
+            font-family: var(--font-head);
+            font-weight: 500;
+            font-size: clamp(2rem, 4vw, 2.6rem);
+            line-height: 1.1;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+
+        .order-status {
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 24px;
+            display: inline-block;
+            border-bottom: 1px solid var(--ink);
+            padding-bottom: 4px;
+        }
+
+        .message {
+            color: var(--muted);
+            font-size: 1.05rem;
+            margin-bottom: 28px;
+            text-wrap: balance;
+        }
+
+        /* Informational Safe Alert Box */
+        .instruction-box {
+            background-color: var(--cream);
+            border-left: 3px solid var(--ink);
+            padding: 20px;
+            text-align: left;
+            margin-bottom: 36px;
+            border-radius: 2px;
+        }
+
+        .instruction-box h3 {
+            font-family: var(--font-head);
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .instruction-box p {
+            font-size: 0.94rem;
+            color: var(--muted);
+        }
+
+        /* Button Action Styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 14px 28px;
+            border: 1px solid var(--ink);
+            border-radius: 4px;
+            background: var(--ink);
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.22s ease, color 0.22s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background: var(--white);
+            color: var(--ink);
+        }
+    </style>
+</head>
+<body>
+
+    <main class="thank-you-card">
+        <!-- Minimal Elegant Checkmark Icon -->
+        <div class="success-icon">
+            <svg viewBox="0 0 24 24">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+
+        <span class="order-status">Order Logged Successfully</span>
+        <h1>We've received your custom details.</h1>
+        
+        <p class="message">Thank you for shopping with Shop224. Because each item is personalized and custom-made for you, we strictly verify pricing metrics before collecting funds to safeguard your order.</p>
+
+        <!-- Fraud Prevention Notice Box -->
+        <div class="instruction-box">
+            <h3>Next Step: Secure Invoice Verification</h3>
+            <p>An official, permanently hard-locked <strong>Yoco payment invitation matching your exact cart total</strong> has been generated and dispatched to the email address you just provided. Please check your inbox within the next few minutes to complete your secure card entry or instant EFT payment safely.</p>
+        </div>
+
+        <!-- Back to Store Action button -->
+        <a href="index.html" class="btn">Return to Storefront</a>
+    </main>
+
+</body>
+</html>
