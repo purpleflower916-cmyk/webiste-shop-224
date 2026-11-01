@@ -762,7 +762,7 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
 const numericTotal = document.getElementById('orderTotal').value || document.getElementById('cartTotalText').innerText.replace(/[^0-9.]/g, '');
 
 // Redirect the customer to Yoco with the amount dynamically pre-filled and locked
-window.location.href = "https://yoco.com" + numericTotal;
+window.location.href = "https://pay.yoco.com/shop224" + numericTotal;
 
         } else {
             console.error(response);
