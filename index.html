@@ -757,7 +757,7 @@ document.getElementById('checkoutForm').addEventListener('submit', function(e) {
     .then(async (response) => {
         if (response.status == 200) {
             // SUCCESS: Delivery info is in your email inbox, now push them to Yoco
-            window.location.href = "https://yoco.com";
+            window.location.href = "https://pay.yoco.com/shop224";
         } else {
             console.error(response);
             alert("Something went wrong saving details. Please try again.");
