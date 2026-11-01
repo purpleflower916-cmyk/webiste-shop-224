@@ -243,6 +243,33 @@ button, input { font: inherit; color: inherit; }
 .drawer-foot { padding: 20px; border-top: 1px solid var(--line); display: grid; gap: 14px; }
 .subtotal { display: flex; justify-content: space-between; font-weight: 700; font-size: 1.1rem; font-variant-numeric: tabular-nums; }
 .foot-note { font-size: 0.84rem; color: var(--muted); }
+.totals { display: grid; gap: 8px; font-variant-numeric: tabular-nums; }
+.totals .row { display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--muted); }
+.totals .row.grand { color: var(--ink); font-weight: 700; font-size: 1.15rem; padding-top: 10px; border-top: 1px solid var(--line); }
+.drawer-body { display: flex; flex-direction: column; flex: 1; min-height: 0; }
+.drawer-body[hidden] { display: none !important; }
+
+/* Checkout view */
+.checkout { flex: 1; min-height: 0; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 18px; }
+.back-btn { align-self: flex-start; background: none; border: 0; padding: 0; cursor: pointer; font: inherit; font-size: 0.9rem; font-weight: 600; text-decoration: underline; color: var(--ink); }
+.co-summary { background: var(--cream); border: 1px solid var(--line); border-radius: 4px; padding: 14px 16px; display: grid; gap: 8px; font-size: 0.9rem; }
+.co-summary ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.co-summary li { display: flex; justify-content: space-between; gap: 12px; }
+.co-summary li span:first-child { overflow-wrap: anywhere; }
+.co-summary li span:last-child { white-space: nowrap; font-variant-numeric: tabular-nums; }
+.co-summary .co-total { display: flex; justify-content: space-between; font-weight: 700; border-top: 1px solid var(--line); padding-top: 8px; }
+.co-form { display: grid; gap: 16px; }
+.co-field { display: grid; gap: 6px; }
+.co-field label { font-size: 0.86rem; font-weight: 600; }
+.co-field input, .co-field textarea {
+  width: 100%; font: inherit; font-size: 1rem; color: var(--ink); background: var(--white);
+  border: 1px solid var(--field); border-radius: 4px; padding: 11px 12px; min-height: 44px;
+}
+.co-field textarea { resize: vertical; min-height: 96px; }
+.co-field input:focus, .co-field textarea:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 1px var(--ink); }
+.co-error { font-size: 0.86rem; font-weight: 600; min-height: 1.2em; }
+.co-note { font-size: 0.82rem; color: var(--muted); }
+.co-note a { text-decoration: underline; }
 
 @media (max-width: 900px) {
   .hero-grid { grid-template-columns: minmax(0, 1fr); }
@@ -391,20 +418,65 @@ button, input { font: inherit; color: inherit; }
 <div class="scrim" id="scrim"></div>
 <aside class="drawer" id="bag" aria-label="Shopping bag" aria-hidden="true">
   <div class="drawer-head">
-    <h2>Your bag</h2>
+    <h2 id="drawerTitle">Your bag</h2>
     <button class="icon-btn" id="bagClose" type="button" aria-label="Close bag">
       <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 2 14 14M14 2 2 14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" fill="none"/></svg>
     </button>
   </div>
-  <ul class="bag-list" id="bagList"></ul>
-  <div class="bag-empty" id="bagEmpty">
-    <p>Your bag is empty. Choose a piece, enter your text and tap Personalise Now.</p>
-    <a class="btn" href="#collection" id="bagBrowse">Browse the collection</a>
+
+  <div class="drawer-body" id="cartView">
+    <ul class="bag-list" id="bagList"></ul>
+    <div class="bag-empty" id="bagEmpty">
+      <p>Your bag is empty. Choose a piece, enter your text and tap Add to Bag.</p>
+      <a class="btn" href="#collection" id="bagBrowse">Browse the collection</a>
+    </div>
+    <div class="drawer-foot" id="bagFoot">
+      <div class="totals">
+        <div class="row"><span>Subtotal</span><span id="bagSubtotal">R 0</span></div>
+        <div class="row"><span>Shipping and delivery</span><span>Free</span></div>
+        <div class="row grand"><span>Total</span><span id="bagTotal">R 0</span></div>
+      </div>
+      <button class="btn btn-block" id="checkout" type="button">Proceed to Checkout</button>
+    </div>
   </div>
-  <div class="drawer-foot" id="bagFoot">
-    <div class="subtotal"><span>Subtotal</span><span id="bagSubtotal">R 0</span></div>
-    <p class="foot-note" id="bagNote">Shipping and delivery are free.</p>
-    <button class="btn btn-block" id="checkout" type="button">Checkout</button>
+
+  <div class="drawer-body" id="checkoutView" hidden>
+    <div class="checkout">
+      <button class="back-btn" id="backToBag" type="button">&larr; Back to bag</button>
+      <div class="co-summary" aria-label="Order summary">
+        <ul id="coItems"></ul>
+        <div class="co-total"><span>Total (delivery free)</span><span id="coTotal">R 0</span></div>
+      </div>
+      <form class="co-form" id="checkoutForm" action="https://api.web3forms.com/submit" method="POST">
+        <input type="hidden" name="access_key" value="ff845458-4bde-4ead-a2d8-edfcf2b146f0">
+        <input type="hidden" name="redirect" value="https://pay.yoco.com/shop224">
+        <input type="hidden" name="subject" value="New Shop224 order">
+        <input type="hidden" name="from_name" value="Shop224 website">
+        <input type="checkbox" name="botcheck" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <textarea name="order_details" id="orderDetails" hidden></textarea>
+        <input type="hidden" name="order_total" id="orderTotal" value="">
+
+        <div class="co-field">
+          <label for="co-name">Full name</label>
+          <input id="co-name" name="name" type="text" autocomplete="name" required>
+        </div>
+        <div class="co-field">
+          <label for="co-email">Email</label>
+          <input id="co-email" name="email" type="email" autocomplete="email" required>
+        </div>
+        <div class="co-field">
+          <label for="co-phone">Cellphone</label>
+          <input id="co-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required>
+        </div>
+        <div class="co-field">
+          <label for="co-address">Delivery address</label>
+          <textarea id="co-address" name="delivery_address" autocomplete="street-address" required></textarea>
+        </div>
+        <p class="co-error" id="coError" role="alert"></p>
+        <button class="btn btn-block" type="submit" id="coSubmit">Continue to payment</button>
+        <p class="co-note">Please check your text carefully. Every piece is made with your own text, so orders cannot be returned for a change of mind or a typo. Your details are used to make and deliver your order, as set out in our <a href="privacy.html">Privacy Policy</a>.</p>
+      </form>
+    </div>
   </div>
 </aside>
 
@@ -470,7 +542,7 @@ button, input { font: inherit; color: inherit; }
           '<input id="in-' + p.id + '" type="text" maxlength="' + p.max + '" placeholder="' + p.placeholder + '" autocomplete="off" spellcheck="false" aria-describedby="hint-' + p.id + '">' +
           '<p class="hint" id="hint-' + p.id + '">' + p.hint + '</p>' +
         '</div>' +
-        '<button class="btn btn-block" type="button">Personalise Now</button>' +
+        '<button class="btn btn-block add-btn" type="button">Add to Bag</button>' +
       '</div>';
 
     var input = $('input[type="text"]', card);
@@ -486,7 +558,7 @@ button, input { font: inherit; color: inherit; }
         $('.metal-name', card).textContent = METALS[e.target.value];
       }
     });
-    $('.btn', card).addEventListener('click', function () {
+    $('.add-btn', card).addEventListener('click', function () {
       var text = input.value.trim();
       if (!text) {
         hint.classList.add('warn');
@@ -582,13 +654,43 @@ button, input { font: inherit; color: inherit; }
     $('#bagFoot').hidden = !has;
     $('#bagEmpty').hidden = has;
     $('#bagSubtotal').textContent = fmt(total);
-    $('#bagNote').textContent = 'Shipping and delivery are free.';
+    $('#bagTotal').textContent = fmt(total);
+    if (!has && view === 'checkout') setView('cart');
     var badge = $('#bagCount');
     badge.hidden = !has;
     badge.textContent = String(units);
   }
 
   var pageParts = [$('#nav'), $('#main'), $('#footer')];
+  var view = 'cart';
+  function setView(v) {
+    view = v;
+    $('#cartView').hidden = v !== 'cart';
+    $('#checkoutView').hidden = v !== 'checkout';
+    $('#drawerTitle').textContent = v === 'cart' ? 'Your bag' : 'Checkout';
+    if (v === 'checkout') {
+      var lines = bag.map(function (i) {
+        var p = BY_ID[i.id];
+        return '<li><span>' + esc(p.name) + ' (' + METALS[i.metal] + ') ×' + i.qty + '<br><em>“' + esc(i.text) + '”</em></span><span>' + fmt(p.price * i.qty) + '</span></li>';
+      });
+      $('#coItems').innerHTML = lines.join('');
+      $('#coTotal').textContent = fmt(cartTotal());
+      $('#coError').textContent = '';
+      $('#co-name').focus();
+    }
+  }
+  function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+  function cartTotal() { return bag.reduce(function (t, i) { return t + BY_ID[i.id].price * i.qty; }, 0); }
+  function orderText() {
+    var out = bag.map(function (i, n) {
+      var p = BY_ID[i.id];
+      return (n + 1) + '. ' + p.name + ' | Metal: ' + METALS[i.metal] + ' | Custom text: "' + i.text + '" | Qty: ' + i.qty +
+        ' | Unit: ' + fmt(p.price) + ' | Line total: ' + fmt(p.price * i.qty);
+    });
+    out.push('', 'Subtotal: ' + fmt(cartTotal()), 'Shipping and delivery: Free', 'TOTAL: ' + fmt(cartTotal()));
+    return out.join('\n');
+  }
+
   function openBag() {
     lastFocus = document.activeElement;
     drawer.classList.add('open'); scrim.classList.add('open');
@@ -602,6 +704,7 @@ button, input { font: inherit; color: inherit; }
     drawer.setAttribute('aria-hidden', 'true');
     toggle.setAttribute('aria-expanded', 'false');
     pageParts.forEach(function (n) { n.inert = false; });
+    setView('cart');
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
   toggle.addEventListener('click', function () { drawer.classList.contains('open') ? closeBag() : openBag(); });
@@ -610,8 +713,19 @@ button, input { font: inherit; color: inherit; }
   $('#bagBrowse').addEventListener('click', function () { lastFocus = null; closeBag(); });
   scrim.addEventListener('click', closeBag);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawer.classList.contains('open')) closeBag(); });
-  $('#checkout').addEventListener('click', function () {
-    $('#bagNote').textContent = 'Checkout is not connected yet. This page is a design preview, so no order has been placed.';
+  $('#checkout').addEventListener('click', function () { if (bag.length) setView('checkout'); });
+  $('#backToBag').addEventListener('click', function () { setView('cart'); $('#checkout').focus(); });
+  $('#checkoutForm').addEventListener('submit', function (e) {
+    if (!bag.length) { e.preventDefault(); $('#coError').textContent = 'Your bag is empty.'; return; }
+    /* Fill the order into the form just before the native POST to Web3Forms */
+    $('#orderDetails').value = orderText();
+    $('#orderTotal').value = fmt(cartTotal());
+    $('#coSubmit').disabled = true;
+    $('#coSubmit').textContent = 'Sending your order…';
+  });
+  /* Back/forward cache: re-enable the button if the customer returns from the payment page */
+  window.addEventListener('pageshow', function () {
+    $('#coSubmit').disabled = false; $('#coSubmit').textContent = 'Continue to payment';
   });
 
   renderBag();
