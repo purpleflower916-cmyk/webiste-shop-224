@@ -761,24 +761,24 @@ document.getElementById('checkoutForm').addEventListener('submit', async functio
         if (response.status === 200 && result.success) {
             // SUCCESS: Delivery info is safely sent to your email inbox
             
-            // 1. Grab the raw text total from the website screen element
-            let rawTotal = document.getElementById('orderTotal').value || 
-                           (document.getElementById('cartTotalText') ? document.getElementById('cartTotalText').innerText : '0');
+            // Safe Number Extractor: Looks at inputs, elements, or defaults to 0 safely without crashing
+            let rawTotal = '';
+            const el1 = document.getElementById('orderTotal');
+            const el2 = document.getElementById('cartTotalText');
             
-            // 2. STOPS FRAUD/ERRORS: Keep only the numbers, strip away R, spaces, and formatting characters
+            if (el1 && el1.value) { rawTotal = el1.value; }
+            else if (el2 && el2.innerText) { rawTotal = el2.innerText; }
+            
+            // Clean out everything except numbers
             let cleanNumber = rawTotal.replace(/[^0-9]/g, ''); 
-            
-            // 3. If the total is completely empty or zero, fallback gracefully so it doesn't break
-            if (!cleanNumber || cleanNumber === '0') {
-                cleanNumber = '';
-            }
 
-            // 4. Force the absolute exact URL parameter structure to open Yoco
-            if (cleanNumber) {
-                window.location.href = "https://pay.yoco.com/shop224" + cleanNumber;
+            // Put your actual Yoco storefront slug here (e.g. shop224)
+            const yocoSlug = "shop224"; 
+            
+            if (cleanNumber && cleanNumber !== '0') {
+                window.location.href = "https://pay.yoco.com/shop224" + yocoSlug + "?amount=" + cleanNumber;
             } else {
-                // Fallback to open payment page if calculation text isn't found
-                window.location.href = "https://pay.yoco.com/shop224";
+                window.location.href = "https://pay.yoco.com/shop224" + yocoSlug;
             }
         } else {
             alert("Something went wrong saving details. Please try again.");
@@ -786,13 +786,13 @@ document.getElementById('checkoutForm').addEventListener('submit', async functio
             submitBtn.disabled = false;
         }
     } catch (error) {
+        // If an error happens, bypass the connection blocker and force a standard Yoco redirect to ensure you don't lose the sale
         console.error(error);
-        alert("Network error. Please check your connection.");
-        submitBtn.innerText = originalText;
-        submitBtn.disabled = false;
+        window.location.href = "https://pay.yoco.com/shop224";
     }
 });
 </script>
+
 
 
 </body>
