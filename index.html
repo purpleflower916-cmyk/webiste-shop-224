@@ -449,7 +449,6 @@ button, input { font: inherit; color: inherit; }
       </div>
       <form class="co-form" id="checkoutForm" action="https://api.web3forms.com/submit" method="POST">
         <input type="hidden" name="access_key" value="ff845458-4bde-4ead-a2d8-edfcf2b146f0">
-        <input type="hidden" name="redirect" value="https://pay.yoco.com/shop224">
         <input type="hidden" name="subject" value="New Shop224 order">
         <input type="hidden" name="from_name" value="Shop224 website">
         <input type="checkbox" name="botcheck" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
@@ -729,7 +728,6 @@ button, input { font: inherit; color: inherit; }
     $('#orderTotal').value = fmt(cartTotal());
     var payload = {};
     new FormData(checkoutForm).forEach(function (v, k) { payload[k] = v; });
-    delete payload.redirect;
     btn.disabled = true;
     btn.textContent = 'Securing Order details...';
     var ctrl = new AbortController();
