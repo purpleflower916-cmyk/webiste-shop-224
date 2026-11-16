@@ -2,7 +2,7 @@
 // Yoco calls this when a payment succeeds. We verify the signature, then email
 // the order to the shop owner. Only this email means the order is PAID.
 
-import { json, PRODUCTS, METALS, describeItems, orderTotal, money, sendEmail } from '../_lib/shared.js';
+import { json, PRODUCTS, METALS, describeItems, orderTotal, money, sendEmail, customerConfirmation } from '../_lib/shared.js';
 
 const enc = new TextEncoder();
 
@@ -122,7 +122,21 @@ export async function onRequestPost({ request, env }) {
     text: lines.join('\n'),
   });
   // A non-2xx makes Yoco retry later, so a paid order is never lost to a brief email outage
-  return r.ok ? json({ ok: true }) : json({ error: 'Email failed.' }, 500);
+  if (!r.ok) return json({ error: 'Email failed.' }, 500);
+
+  // Order confirmation for the customer. Optional, and it never makes the webhook fail:
+  // a failure here must not trigger a retry (that would send you duplicate PAID emails).
+  const amountMatches = Number.isFinite(amountCents) && Number.isFinite(expected) && amountCents === expected;
+  if (env.CUSTOMER_EMAILS === 'true' && items && amountMatches && meta.customerEmail) {
+    const c = await sendEmail(env, {
+      to: meta.customerEmail,
+      replyTo: env.ORDER_TO_EMAIL,
+      subject: `Your Shop224 order ${meta.orderRef} is confirmed`,
+      text: customerConfirmation({ orderRef: meta.orderRef, customerName: meta.customerName, items, paidRand: amountCents / 100 }),
+    });
+    if (!c.ok) console.log('Customer confirmation email failed', c.status, c.reason || '');
+  }
+  return json({ ok: true });
 }
 
 export async function onRequest() {

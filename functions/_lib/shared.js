@@ -89,15 +89,16 @@ export function orderTotal(items) {
 }
 
 /** Send a plain-text email through Resend. Never throws: returns { ok, status }. */
-export async function sendEmail(env, { subject, text, replyTo }) {
-  if (!env.RESEND_API_KEY || !env.ORDER_TO_EMAIL) return { ok: false, status: 0, reason: 'email not configured' };
+export async function sendEmail(env, { subject, text, replyTo, to }) {
+  const recipient = to || env.ORDER_TO_EMAIL; // default: the shop owner
+  if (!env.RESEND_API_KEY || !recipient) return { ok: false, status: 0, reason: 'email not configured' };
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         from: env.ORDER_FROM_EMAIL || 'Shop224 Orders <onboarding@resend.dev>',
-        to: [env.ORDER_TO_EMAIL],
+        to: [recipient],
         subject,
         text,
         ...(replyTo ? { reply_to: replyTo } : {}),
@@ -111,4 +112,32 @@ export async function sendEmail(env, { subject, text, replyTo }) {
 
 export function customerBlock(c) {
   return `Name: ${c.name}\nEmail: ${c.email}\nCellphone: ${c.phone}\nDelivery address:\n${c.address}`;
+}
+
+/** The confirmation the customer receives once Yoco has confirmed their payment. */
+export function customerConfirmation({ orderRef, customerName, items, paidRand }) {
+  const first = String(customerName || '').split(' ')[0] || 'there';
+  return [
+    `Hi ${first},`,
+    '',
+    'Thank you for your order. Your payment has been received.',
+    '',
+    `Order reference: ${orderRef}`,
+    '',
+    'Your order:',
+    describeItems(items),
+    '',
+    `Total paid: ${money(paidRand)} (shipping and delivery are free)`,
+    '',
+    'What happens next:',
+    '- We make your personalised piece in 3 to 5 business days.',
+    '- It is then delivered to you in 2 to 3 weeks.',
+    '',
+    'Every piece is made with the text you entered, so orders cannot be returned for a change of mind or a typo.',
+    '',
+    'If you have a question, reply to this email and quote your order reference.',
+    '',
+    'Today. Tomorrow. Forever',
+    'Shop224',
+  ].join('\n');
 }
