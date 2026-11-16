@@ -306,15 +306,12 @@ a.inline:hover { opacity: 0.6; }
 <main id="main">
   <section class="page-head" id="top">
     <div class="wrap">
-      <p class="eyebrow">Order received</p>
-      <h1>Thank you. Your order details are with us.</h1>
+      <p class="eyebrow">Thank you</p>
+      <h1>Thank you for your order.</h1>
       <div class="prose" style="margin-top:24px">
-        <p>We have your order and delivery details. Each piece is personalised to order, so we make it in 3 to 5 business days and deliver in 2 to 3 weeks. Shipping and delivery are free.</p>
-        <div id="lastOrder" hidden style="background:var(--white);border:1px solid var(--line);border-radius:4px;padding:16px 18px;color:var(--ink);font-size:0.95rem">
-          <strong>Your order</strong>
-          <pre id="lastOrderText" style="white-space:pre-wrap;font:inherit;margin:8px 0 0"></pre>
-        </div>
-        <p><strong>What happens next:</strong> we will email you a secure payment link for your exact order total, usually shortly after you place your order. Your order is confirmed and goes into production once that payment is made.</p>
+        <p id="refLine" hidden><strong>Order reference:</strong> <span id="refVal"></span></p>
+        <p>Your payment is being confirmed with Yoco. Once it is confirmed, we make your personalised piece in 3 to 5 business days and deliver it in 2 to 3 weeks. Shipping and delivery are free.</p>
+        <p>If you do not hear from us within a day, or something looks wrong, please email us with your order reference and we will sort it out.</p>
         <p>Questions? Email <a class="textlink" href="mailto:shop224.info@gmail.com">shop224.info@gmail.com</a> or message @shop224_za on Instagram and TikTok.</p>
         <p><a class="textlink" href="index.html#collection">Back to the collection</a></p>
       </div>
@@ -403,12 +400,12 @@ a.inline:hover { opacity: 0.6; }
 </script>
 <script>
 (function () {
+  /* The payment went through to the thank-you page, so the saved bag can be emptied */
+  try { localStorage.removeItem('shop224-bag'); } catch (e) {}
+  var badge = document.getElementById('bagCount'); if (badge) { badge.hidden = true; badge.textContent = '0'; }
   try {
-    var raw = sessionStorage.getItem('shop224-last-order');
-    if (!raw) return;
-    var o = JSON.parse(raw);
-    document.getElementById('lastOrderText').textContent = String(o.text || '');
-    document.getElementById('lastOrder').hidden = false;
+    var m = /[?&]ref=(S224-[A-Z0-9]{6})\b/.exec(location.search);
+    if (m) { document.getElementById('refVal').textContent = m[1]; document.getElementById('refLine').hidden = false; }
   } catch (e) {}
 })();
 </script>

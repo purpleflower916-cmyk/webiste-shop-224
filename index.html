@@ -638,6 +638,7 @@ button, input { font: inherit; color: inherit; }
       <a class="btn" href="#collection" id="bagBrowse">Browse the collection</a>
     </div>
     <div class="drawer-foot" id="bagFoot">
+      <p class="co-error" id="bagNote" role="status" hidden></p>
       <div class="totals">
         <div class="row"><span>Subtotal</span><span id="bagSubtotal">R 0</span></div>
         <div class="row"><span>Shipping and delivery</span><span>Free</span></div>
@@ -654,13 +655,8 @@ button, input { font: inherit; color: inherit; }
         <ul id="coItems"></ul>
         <div class="co-total"><span>Total (delivery free)</span><span id="coTotal">R 0</span></div>
       </div>
-      <form class="co-form" id="checkoutForm" action="https://api.web3forms.com/submit" method="POST">
-        <input type="hidden" name="access_key" value="ff845458-4bde-4ead-a2d8-edfcf2b146f0">
-        <input type="hidden" name="subject" value="New Shop224 order">
-        <input type="hidden" name="from_name" value="Shop224 website">
-        <input type="checkbox" name="botcheck" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
-        <textarea name="order_details" id="orderDetails" hidden></textarea>
-        <input type="hidden" name="order_total" id="orderTotal" value="">
+      <form class="co-form" id="checkoutForm" action="/api/checkout" method="POST">
+        <input type="text" name="company" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
 
         <div class="co-field">
           <label for="co-name">Full name</label>
@@ -679,8 +675,8 @@ button, input { font: inherit; color: inherit; }
           <textarea id="co-address" name="delivery_address" autocomplete="street-address" required></textarea>
         </div>
         <p class="co-error" id="coError" role="alert"></p>
-        <button class="btn btn-block" type="submit" id="coSubmit">Place order</button>
-        <p class="co-note">Please check your text carefully. Every piece is made with your own text, so orders cannot be returned for a change of mind or a typo. Your details are used to make and deliver your order, as set out in our <a href="privacy.html">Privacy Policy</a>.</p>
+        <button class="btn btn-block" type="submit" id="coSubmit">Continue to secure payment</button>
+        <p class="co-note">You will pay on Yoco&rsquo;s secure payment page. Your card details never touch this website. Please check your text carefully. Every piece is made with your own text, so orders cannot be returned for a change of mind or a typo. Your details are used to make and deliver your order, as set out in our <a href="privacy.html">Privacy Policy</a>.</p>
       </form>
     </div>
   </div>
@@ -845,16 +841,6 @@ button, input { font: inherit; color: inherit; }
   }
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
   function cartTotal() { return bag.reduce(function (t, i) { return t + BY_ID[i.id].price * i.qty; }, 0); }
-  function orderText() {
-    var out = bag.map(function (i, n) {
-      var p = BY_ID[i.id];
-      return (n + 1) + '. ' + p.name + ' | Metal: ' + METALS[i.metal] + ' | Custom text: "' + i.text + '" | Qty: ' + i.qty +
-        ' | Unit: ' + fmt(p.price) + ' | Line total: ' + fmt(p.price * i.qty);
-    });
-    out.push('', 'Subtotal: ' + fmt(cartTotal()), 'Shipping and delivery: Free', 'TOTAL: ' + fmt(cartTotal()));
-    return out.join('\n');
-  }
-
   function openBag() {
     lastFocus = document.activeElement;
     drawer.classList.add('open'); scrim.classList.add('open');
@@ -879,53 +865,66 @@ button, input { font: inherit; color: inherit; }
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && drawer.classList.contains('open')) closeBag(); });
   $('#checkout').addEventListener('click', function () { if (bag.length) setView('checkout'); });
   $('#backToBag').addEventListener('click', function () { setView('cart'); $('#checkout').focus(); });
-  var WEB3FORMS_URL = 'https://api.web3forms.com/submit';
   var checkoutForm = $('#checkoutForm');
+  var PAY_LABEL = 'Continue to secure payment';
   checkoutForm.addEventListener('submit', async function (e) {
     e.preventDefault();
-    if (!bag.length) { $('#coError').textContent = 'Your bag is empty.'; return; }
     var btn = $('#coSubmit');
     var err = $('#coError');
     err.textContent = '';
-    /* Put the full order into the form, then read everything as JSON */
-    var summary = orderText();
-    $('#orderDetails').value = summary;
-    $('#orderTotal').value = fmt(cartTotal());
-    var payload = {};
-    new FormData(checkoutForm).forEach(function (v, k) { payload[k] = v; });
+    if (!bag.length) { err.textContent = 'Your bag is empty.'; return; }
+    /* Only ids, metal, text and quantity are sent. Prices are set on the server. */
+    var payload = {
+      company: checkoutForm.elements['company'].value,
+      customer: {
+        name: $('#co-name').value,
+        email: $('#co-email').value,
+        phone: $('#co-phone').value,
+        address: $('#co-address').value
+      },
+      items: bag.map(function (i) { return { id: i.id, metal: i.metal, text: i.text, qty: i.qty }; })
+    };
     btn.disabled = true;
-    btn.textContent = 'Securing Order details...';
+    btn.textContent = 'Taking you to secure payment...';
     var ctrl = new AbortController();
-    var timer = setTimeout(function () { ctrl.abort(); }, 15000);
+    var timer = setTimeout(function () { ctrl.abort(); }, 20000);
+    var serverMsg = '';
     try {
-      var res = await fetch(WEB3FORMS_URL, {
+      var res = await fetch('/api/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify(payload),
         signal: ctrl.signal
       });
-      var data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data && data.message ? data.message : 'Submission failed');
-      try { sessionStorage.setItem('shop224-last-order', JSON.stringify({ text: summary })); } catch (x) {}
-      bag = []; saveBag();
-      window.location.href = 'thanks.html';
+      var data = await res.json().catch(function () { return {}; });
+      if (!res.ok || !data.redirectUrl || String(data.redirectUrl).indexOf('https://') !== 0) {
+        serverMsg = data && data.error ? String(data.error) : '';
+        throw new Error('checkout failed');
+      }
+      /* The bag is kept until the customer reaches the thank-you page */
+      window.location.href = data.redirectUrl;
     } catch (ex) {
-      /* The order was NOT received: keep the bag and let the customer try again */
-      err.textContent = 'We could not send your order. Please check your connection and try again, or email shop224.info@gmail.com.';
+      err.textContent = serverMsg || 'We could not start your payment. Please check your connection and try again, or email shop224.info@gmail.com.';
       btn.disabled = false;
-      btn.textContent = 'Place order';
+      btn.textContent = PAY_LABEL;
     } finally {
       clearTimeout(timer);
     }
   });
 
-  /* Back/forward cache: re-enable the button if the customer returns from the payment page */
+  /* Back/forward cache: re-enable the button if the customer comes back from the payment page */
   window.addEventListener('pageshow', function () {
-    $('#coSubmit').disabled = false; $('#coSubmit').textContent = 'Place order';
+    $('#coSubmit').disabled = false; $('#coSubmit').textContent = PAY_LABEL;
   });
 
   renderBag();
-  if (location.hash === '#bag') openBag();
+  if (/[?&]checkout=failed/.test(location.search)) {
+    var note = $('#bagNote');
+    note.textContent = 'Your payment did not go through, and you have not been charged. Your bag is saved, so you can try again.';
+    note.hidden = false;
+    try { history.replaceState(null, '', location.pathname + '#bag'); } catch (x) {}
+    openBag();
+  } else if (location.hash === '#bag') openBag();
 })();
 </script>
 </body>
