@@ -659,7 +659,8 @@ button, input { font: inherit; color: inherit; }
         <div class="co-total"><span>Total (delivery free)</span><span id="coTotal">R 0</span></div>
       </div>
       <form class="co-form" id="checkoutForm" action="/api/checkout" method="POST">
-        <input type="text" name="company" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <!-- Spam trap. Its name and readonly stop browser autofill from filling it in for real customers. -->
+        <input type="text" name="s224_hp" class="sr" tabindex="-1" autocomplete="off" aria-hidden="true" readonly>
 
         <div class="co-field">
           <label for="co-name">Full name</label>
@@ -907,7 +908,7 @@ button, input { font: inherit; color: inherit; }
     if (!bag.length) { err.textContent = 'Your bag is empty.'; return; }
     /* Only ids, metal, text and quantity are sent. Prices are set on the server. */
     var payload = {
-      company: checkoutForm.elements['company'].value,
+      company: checkoutForm.elements['s224_hp'].value,
       customer: {
         name: $('#co-name').value,
         email: $('#co-email').value,
