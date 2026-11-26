@@ -190,6 +190,9 @@ button, input { font: inherit; color: inherit; }
 .title-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .card h3 { font-family: var(--font-head); font-weight: 700; font-size: 1.4rem; line-height: 1.15; }
 .price { font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.sale-price { display: inline-flex; flex-direction: column; align-items: flex-end; line-height: 1.3; }
+.sale-price del { color: var(--muted); font-weight: 500; text-decoration: line-through; text-decoration-color: #d00000; text-decoration-thickness: 2px; }
+.sale-price ins { text-decoration: none; font-weight: 700; }
 .desc { color: var(--muted); font-size: 0.94rem; margin-top: -6px; }
 .metals { display: flex; align-items: center; gap: 10px; border: 0; padding: 0; margin: 0; min-width: 0; }
 .metals legend { padding: 0; }
@@ -688,7 +691,24 @@ button, input { font: inherit; color: inherit; }
   var METALS = { gold: 'Gold', silver: 'Silver' };
   var STORE_KEY = 'shop224-bag';
 
-  function fmt(n) { return 'R\u00a0' + String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ','); }
+  function fmt(n) {
+    var s = n % 1 ? n.toFixed(2) : String(n);
+    return 'R\u00a0' + s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  }
+
+  /* ---------- Black Friday sale ----------
+     15% off from 27 to 30 November 2026, South African time.
+     The amount charged is set in functions/_lib/shared.js. Change both together. */
+  var SALE = { start: Date.parse('2026-11-27T00:00:00+02:00'), end: Date.parse('2026-12-01T00:00:00+02:00'), percentOff: 15 };
+  var clockOffset = 0; /* corrects a wrong clock on the visitor's device */
+  function saleOn() { var t = Date.now() + clockOffset; return t >= SALE.start && t < SALE.end; }
+  function unitPrice(p) { return saleOn() ? Math.round(p.price * (100 - SALE.percentOff)) / 100 : p.price; }
+  function lineTotal(p, qty) { return Math.round(unitPrice(p) * 100) * qty / 100; }
+  /* Normal price, or the old price struck through in red with the new price below it */
+  function priceHTML(p, qty) {
+    if (!saleOn()) return fmt(p.price * qty);
+    return '<span class="sale-price"><del><span class="sr">Was </span>' + fmt(p.price * qty) + '</del><ins><span class="sr">Now </span>' + fmt(lineTotal(p, qty)) + '</ins></span>';
+  }
 
   /* ---------- Products ---------- */
 
@@ -733,6 +753,13 @@ button, input { font: inherit; color: inherit; }
 
   var grid = $('#grid');
   Array.prototype.forEach.call(grid.querySelectorAll('.card'), hydrate);
+
+  function renderPrices() {
+    Array.prototype.forEach.call(grid.querySelectorAll('.card'), function (card) {
+      var p = BY_ID[card.getAttribute('data-id')];
+      if (p) $('.price', card).innerHTML = priceHTML(p, 1);
+    });
+  }
 
   /* ---------- Nav ---------- */
   var nav = $('#nav');
@@ -787,7 +814,7 @@ button, input { font: inherit; color: inherit; }
     var total = 0, units = 0;
     bag.forEach(function (item, idx) {
       var p = BY_ID[item.id];
-      total += p.price * item.qty; units += item.qty;
+      total += Math.round(unitPrice(p) * 100) * item.qty; units += item.qty;
       var li = el('li', 'bag-item');
       li.appendChild(el('div', 'thumb sw-' + item.metal));
       var mid = el('div');
@@ -806,15 +833,17 @@ button, input { font: inherit; color: inherit; }
       ctl.appendChild(q); ctl.appendChild(rm);
       mid.appendChild(ctl);
       li.appendChild(mid);
-      li.appendChild(el('div', 'bag-line', fmt(p.price * item.qty)));
+      var line = el('div', 'bag-line');
+      line.innerHTML = priceHTML(p, item.qty);
+      li.appendChild(line);
       list.appendChild(li);
     });
     var has = bag.length > 0;
     list.hidden = !has;
     $('#bagFoot').hidden = !has;
     $('#bagEmpty').hidden = has;
-    $('#bagSubtotal').textContent = fmt(total);
-    $('#bagTotal').textContent = fmt(total);
+    $('#bagSubtotal').textContent = fmt(total / 100);
+    $('#bagTotal').textContent = fmt(total / 100);
     if (!has && view === 'checkout') setView('cart');
     var badge = $('#bagCount');
     badge.hidden = !has;
@@ -829,18 +858,21 @@ button, input { font: inherit; color: inherit; }
     $('#checkoutView').hidden = v !== 'checkout';
     $('#drawerTitle').textContent = v === 'cart' ? 'Your bag' : 'Checkout';
     if (v === 'checkout') {
-      var lines = bag.map(function (i) {
-        var p = BY_ID[i.id];
-        return '<li><span>' + esc(p.name) + ' (' + METALS[i.metal] + ') ×' + i.qty + '<br><em>“' + esc(i.text) + '”</em></span><span>' + fmt(p.price * i.qty) + '</span></li>';
-      });
-      $('#coItems').innerHTML = lines.join('');
-      $('#coTotal').textContent = fmt(cartTotal());
+      renderSummary();
       $('#coError').textContent = '';
       $('#co-name').focus();
     }
   }
+  function renderSummary() {
+      var lines = bag.map(function (i) {
+        var p = BY_ID[i.id];
+        return '<li><span>' + esc(p.name) + ' (' + METALS[i.metal] + ') ×' + i.qty + '<br><em>“' + esc(i.text) + '”</em></span><span>' + priceHTML(p, i.qty) + '</span></li>';
+      });
+      $('#coItems').innerHTML = lines.join('');
+      $('#coTotal').textContent = fmt(cartTotal());
+  }
   function esc(t) { return String(t).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
-  function cartTotal() { return bag.reduce(function (t, i) { return t + BY_ID[i.id].price * i.qty; }, 0); }
+  function cartTotal() { return bag.reduce(function (t, i) { return t + Math.round(unitPrice(BY_ID[i.id]) * 100) * i.qty; }, 0) / 100; }
   function openBag() {
     lastFocus = document.activeElement;
     drawer.classList.add('open'); scrim.classList.add('open');
@@ -916,6 +948,21 @@ button, input { font: inherit; color: inherit; }
   window.addEventListener('pageshow', function () {
     $('#coSubmit').disabled = false; $('#coSubmit').textContent = PAY_LABEL;
   });
+
+  /* Switch prices on and off at the right moment, even if the page is left open */
+  var shownSale = null;
+  function refreshSale() {
+    if (saleOn() === shownSale) return;
+    shownSale = saleOn();
+    renderPrices(); renderBag();
+    if (view === 'checkout') renderSummary();
+  }
+  refreshSale();
+  setInterval(refreshSale, 15000);
+  fetch(location.pathname, { method: 'HEAD', cache: 'no-store' }).then(function (res) {
+    var serverTime = Date.parse(res.headers.get('Date'));
+    if (serverTime) { clockOffset = serverTime - Date.now(); refreshSale(); }
+  }).catch(function () {});
 
   renderBag();
   if (/[?&]checkout=failed/.test(location.search)) {

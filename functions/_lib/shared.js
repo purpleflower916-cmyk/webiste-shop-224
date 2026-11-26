@@ -7,6 +7,26 @@ export const PRODUCTS = {
   letternecklace: { name: 'Letter Necklace',  price: 369, maxText: 7 },
   studs:          { name: 'Stud Earrings',    price: 379, maxText: 2 },
 };
+// Black Friday sale: 15% off from Friday 27 to Monday 30 November 2026, South African time.
+// The same dates and percentage are set in index.html. Change both together.
+export const SALE = {
+  start: Date.parse('2026-11-27T00:00:00+02:00'),
+  end: Date.parse('2026-12-01T00:00:00+02:00'), // first moment after the sale
+  percentOff: 15,
+};
+
+/** The price of one piece at a given moment, in rand. */
+export function unitPrice(id, now = Date.now()) {
+  const full = PRODUCTS[id].price;
+  const onSale = now >= SALE.start && now < SALE.end;
+  return onSale ? Math.round(full * (100 - SALE.percentOff)) / 100 : full;
+}
+
+/** The price an order line was sold at (saved at checkout, so it survives the sale ending). */
+function linePrice(i) {
+  return Number.isFinite(i.price) ? i.price : PRODUCTS[i.id].price;
+}
+
 export const METALS = { gold: 'Gold', silver: 'Silver' };
 export const MAX_LINES = 20;
 export const MAX_QTY = 9;
@@ -56,7 +76,8 @@ export function validateOrder(body) {
   if (body.items.length > MAX_LINES) return { error: 'Your bag has too many lines. Please contact us to order in bulk.' };
 
   const items = [];
-  let totalRand = 0;
+  const now = Date.now(); // one moment for the whole order
+  let totalCents = 0;
   for (const raw of body.items) {
     const p = raw && PRODUCTS[raw.id];
     if (!p) return { error: 'One of the items in your bag is no longer available.' };
@@ -67,25 +88,27 @@ export function validateOrder(body) {
     if (!NO_CONTROL_OR_TAGS.test(text)) return { error: `The text for your ${p.name} contains characters we cannot accept.` };
     const qty = Number(raw.qty);
     if (!Number.isInteger(qty) || qty < 1 || qty > MAX_QTY) return { error: 'Invalid quantity.' };
-    items.push({ id: raw.id, metal: raw.metal, text, qty });
-    totalRand += p.price * qty;
+    const price = unitPrice(raw.id, now);
+    items.push({ id: raw.id, metal: raw.metal, text, qty, price });
+    totalCents += Math.round(price * 100) * qty;
   }
-  return { customer, items, totalRand };
+  return { customer, items, totalRand: totalCents / 100 };
 }
 
 export function money(rand) {
-  return 'R' + String(rand).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  const s = Number.isInteger(rand) ? String(rand) : rand.toFixed(2);
+  return 'R' + s.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
 export function describeItems(items) {
   return items.map((i, n) => {
     const p = PRODUCTS[i.id];
-    return `${n + 1}. ${p.name} | ${METALS[i.metal]} | Personalisation text: "${i.text}" | Qty: ${i.qty} | ${money(p.price * i.qty)}`;
+    return `${n + 1}. ${p.name} | ${METALS[i.metal]} | Personalisation text: "${i.text}" | Qty: ${i.qty} | ${money(Math.round(linePrice(i) * 100) * i.qty / 100)}`;
   }).join('\n');
 }
 
 export function orderTotal(items) {
-  return items.reduce((t, i) => t + PRODUCTS[i.id].price * i.qty, 0);
+  return items.reduce((t, i) => t + Math.round(linePrice(i) * 100) * i.qty, 0) / 100;
 }
 
 /** Send a plain-text email through Resend. Never throws: returns { ok, status }. */

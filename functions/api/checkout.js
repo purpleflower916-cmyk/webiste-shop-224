@@ -25,7 +25,7 @@ export async function onRequestPost({ request, env }) {
   if (v.error) return json({ error: v.error }, 400);
 
   const orderRef = 'S224-' + rand(6);
-  const amount = v.totalRand * 100; // Yoco wants cents
+  const amount = Math.round(v.totalRand * 100); // Yoco wants cents
 
   // Everything we need to email the order once Yoco confirms payment
   const metadata = {
